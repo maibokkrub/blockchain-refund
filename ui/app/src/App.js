@@ -9,7 +9,7 @@ function App() {
     <ChakraProvider theme={theme} style={{width:'100vw', height:'100vh'}}>
       <NavBar />
       <Container bg='salmon'>
-        test
+        test yarn deploy
       </Container>
     </ChakraProvider>
   );
