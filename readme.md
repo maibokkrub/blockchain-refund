@@ -1,13 +1,11 @@
-# Frontend
+# About
 
-base `ui`
+to be written
 
-## Building and Deployment
+## Frontend 
 
-The UI is served by Github Pages from branch `gh-pages`.
-The following scripts should automatically build and push to the `gh-pages` branch.
+Directory `./ui` 
 
-```bash
-yarn build
-yarn deploy
-```
+## Contract 
+
+Directory `./contracts`
