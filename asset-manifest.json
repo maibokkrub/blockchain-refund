@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.js": "/blockchain-refund/static/js/main.bfc4ec1d.chunk.js",
-    "main.js.map": "/blockchain-refund/static/js/main.bfc4ec1d.chunk.js.map",
+    "main.js": "/blockchain-refund/static/js/main.8534b062.chunk.js",
+    "main.js.map": "/blockchain-refund/static/js/main.8534b062.chunk.js.map",
     "runtime-main.js": "/blockchain-refund/static/js/runtime-main.e41c7f0d.js",
     "runtime-main.js.map": "/blockchain-refund/static/js/runtime-main.e41c7f0d.js.map",
     "static/js/2.24cfbb92.chunk.js": "/blockchain-refund/static/js/2.24cfbb92.chunk.js",
@@ -12,6 +12,6 @@
   "entrypoints": [
     "static/js/runtime-main.e41c7f0d.js",
     "static/js/2.24cfbb92.chunk.js",
-    "static/js/main.bfc4ec1d.chunk.js"
+    "static/js/main.8534b062.chunk.js"
   ]
 }
