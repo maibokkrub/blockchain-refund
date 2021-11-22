@@ -12,6 +12,7 @@ function Table(props) {
     return (
         <MaterialTable
             className = {classes.root}
+            style = {{width:'95%', margin:'2rem'}}
             title = {props.title}
             data = {props.data}
             columns = {props.columns}

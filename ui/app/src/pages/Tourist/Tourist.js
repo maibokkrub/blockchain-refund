@@ -38,43 +38,47 @@ function TouristPage() {
 
   return (
     <Container maxW="1300px" h='calc(100vh - 64px - 3rem)'>
-        <Flex>
-          <Box w="550px" p="4">
+
+        <Flex wrap='wrap-reverse'>
+          <Flex w={{sm:'100%', lg:'50%'}} direction='column' > 
+            <Flex borderRadius="10px" direction='row' alignItems='center'>
+              <Spacer />
+              <Flex direction='column' textAlign='right'> 
+                <Text fontSize="1.25rem">Pending Orders</Text>
+                <Text fontSize="1.75rem" fontWeight='bold'>{refundableAmount} ETH</Text>
+              </Flex>
+            </Flex>
             <Table
               title="All Order"
               data={testAllOrderData}
               columns={testAllOrderColumns}
             />
-          </Box>
-          <Spacer />
-          <Box w="480px" p="4">
+          </Flex>
+          <Flex w={{sm:'100%', lg:'50%'}} direction='column' >
+            <Flex borderRadius="10px" direction='row' alignItems='center' >
+            <Spacer />
+                <Flex direction='column' textAlign='right'> 
+                  <Text fontSize="1.25rem">Total Refundable Amount</Text>
+                  <Text fontSize="1.75rem" fontWeight='bold'>{refundableAmount} ETH</Text>
+                </Flex>
+                <Button ml='6' px='5' colorScheme="teal" ml='5'>Claim</Button>
+            </Flex>
             <Table
               title="Refundable Order"
               data={testRefundableOrderData}
               columns={testRefundableOrderColumns}
             />
-            <br />
-            <Center>
-              <Spacer />
-              <Box bg="salmon" p="4" borderRadius="10px" >
-                <Text fontSize="16px" align="center">Total Refundable Amount</Text>
-                <Text fontSize="28px" as="b" align="center">{refundableAmount} ETH</Text>
-              </Box>
-              <Spacer />
-              <Button colorScheme="blue">Request Refund</Button>
-              <Spacer />
-            </Center>
-          </Box>
-          <Spacer />
-          <Box w="250px">
-            <Center>
-              <Text fontSize="24px" as="b" paddingTop="27px" paddingBottom="18px">My QR Code</Text>
-            </Center>
-            <Center>
-              <Image boxSize="200px" borderRadius="5%" src={QRCode} alt="qrcode" />
-            </Center>
-          </Box>
+          </Flex> 
+
         </Flex>
+        {/* <Box w="250px">
+          <Center>
+            <Text fontSize="24px" as="b" paddingTop="27px" paddingBottom="18px">My QR Code</Text>
+          </Center>
+          <Center>
+            <Image boxSize="200px" borderRadius="5%" src={QRCode} alt="qrcode" />
+          </Center>
+        </Box> */}
     </Container> 
   );
 }
