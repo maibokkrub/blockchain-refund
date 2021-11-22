@@ -14,9 +14,9 @@ function NavBar(){
         <Spacer />
         <HStack p='4'>
             <HStack spacing='2rem' pr='2rem' display={{base:'none', md:'inline'}}>
-                <Link to='/user'> User </Link>
-                <Link to='/admin'>Admin </Link>
-                <Link to='/shop'> Shop </Link>
+                <Link to='/tourist'>Tourist</Link>
+                <Link to='/shop'>Shop</Link>
+                <Link to='/government'>Government</Link>
             </HStack>
             <Connector />
         </HStack>

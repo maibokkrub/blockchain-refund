@@ -2,7 +2,7 @@ import React from 'react';
 import MaterialTable from "material-table";
 import { makeStyles } from '@material-ui/core/styles';
 
-function OrderTable(props) {
+function Table(props) {
     const classes = makeStyles({
       root: {
         fontSize: 16,
@@ -29,4 +29,4 @@ function OrderTable(props) {
     );
   }
   
-  export default OrderTable;
+  export default Table;
