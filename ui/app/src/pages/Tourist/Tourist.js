@@ -4,7 +4,7 @@ import Table from '../../components/Table/Table';
 import QRCode from '../../assets/sample-qr.jpg';
 
 function TouristPage() {
-  const [refundAmount, setRefundAmount] = useState(0.25);
+  const [refundableAmount, setRefundableAmount] = useState(0.25);
 
   const testAllOrderData = [
     { country: "THA", shop_name: "Ari Shop", total: 24.23, vat: 1.70, status: 'COMPLETED' },
@@ -58,7 +58,7 @@ function TouristPage() {
               <Spacer />
               <Box bg="salmon" p="4" borderRadius="10px" >
                 <Text fontSize="16px" align="center">Total Refundable Amount</Text>
-                <Text fontSize="28px" as="b" align="center">{refundAmount} ETH</Text>
+                <Text fontSize="28px" as="b" align="center">{refundableAmount} ETH</Text>
               </Box>
               <Spacer />
               <Button colorScheme="blue">Request Refund</Button>

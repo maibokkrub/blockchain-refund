@@ -7,7 +7,8 @@ function GovernmentPage() {
   const [billNo, setBillNo] = useState('');
   const [productId, setProductId] = useState('');
   const [price, setPrice] = useState('');
-  const [refundAmount, setRefundAmount] = useState(0.25);
+  const [pendingAmount, setPendingAmount] = useState(0.25);
+  const [refundedAmount, setRefundedAmount] = useState(0.25);
 
   const testOrderData = [
     { user_address: "0x3cds...78a592b4c", shop_name: "Ari Shop", total: 24.23, vat: 1.70, status: 'COMPLETED' },
@@ -51,10 +52,19 @@ function GovernmentPage() {
                   />
                   <br />
                   <Center>
+                    <Spacer />
+                    <Spacer />
                     <Box bg="salmon" p="4" borderRadius="10px" >
                       <Text fontSize="16px" align="center">Pending to Refund Amount</Text>
-                      <Text fontSize="28px" as="b" align="center">{refundAmount} ETH</Text>
+                      <Text fontSize="28px" as="b" align="center">{pendingAmount} ETH</Text>
                     </Box>
+                    <Spacer />
+                    <Box bg="#4EC33D" p="4" borderRadius="10px" >
+                      <Text fontSize="16px" align="center">Refunded Amount</Text>
+                      <Text fontSize="28px" as="b" align="center">{refundedAmount} ETH</Text>
+                    </Box>
+                    <Spacer />
+                    <Spacer />
                   </Center>
                 </Box>
             </Flex>
