@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 enum State { PENDING, CANCELED, CONFIRMED, REJECTED, REFUNDED }
 
 struct Shop {
-    string shopName;
+    string name;
     string country;
     bool exists;
 }
@@ -39,7 +39,9 @@ contract TaxRefundStorage is Ownable {
     // DECIMAL: 3 -> 00001000 = 1%
     mapping (string => uint256) public vatPercentageByCountry;
 
-    constructor() {}
+    constructor() {
+        _admins[owner()] = Admin({isAdmin: true, country: "NONE"});
+    }
 
     modifier onlyShop {
         require(isShop(msg.sender), "Order Creator is not Shop.");
@@ -62,6 +64,16 @@ contract TaxRefundStorage is Ownable {
 
     function isShop(address addr) public view returns(bool) {
         return shops[addr].exists;
+    }
+
+    function createShop(address addr, string memory _name, string memory _country) public onlyAdmin {
+        Shop memory _shop = Shop({name: _name, country:_country, exists: true});
+        shops[addr] = _shop;
+    }
+
+    function createAdmin(address addr, string memory _name, string memory _country) public onlyAdmin {
+        Shop memory _shop = Shop({name: _name, country:_country, exists: true});
+        shops[addr] = _shop;
     }
 
     function createOrder(address buyer, string calldata name, int price, int amount) public onlyShop{
@@ -104,18 +116,19 @@ contract TaxRefundStorage is Ownable {
     }
 
     function getAllOrdersByBuyer(address buyer) public view returns (Order[] memory){
-        bytes16[] memory _id_list = _ordersByBuyer[buyer];
+        bytes16[] memory _orderIds = _ordersByBuyer[buyer];
         Order[] memory _order;
-        for (uint i = 0; i < _id_list.length;i++ ){
-            _order[i] = orders[_id_list[i]];
+        for (uint i = 0; i < _orderIds.length;i++ ){
+            _order[i] = orders[_orderIds[i]];
         }
         return _order;
     }
 
 
-    function refund(bytes16[] orderIds) onlyAdmin public {
+    function refund(bytes16[] memory _orderIds) onlyAdmin public {
         uint256 refundedAmount = 0;
-        for (uint i = 0; i < _orders.length; i++){
+        Order[] memory _refundedOrders;
+        for (uint i = 0; i < _orderIds.length; i++){
             
         }
         
