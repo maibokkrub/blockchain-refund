@@ -3,7 +3,7 @@ import { Container, Flex, Spacer, Box, Center, Text, Image, Button } from "@chak
 import OrderTable from '../../components/OrderTable/OrderTable';
 import QRCode from '../../assets/sample-qr.jpg';
 
-function UserPage() {
+function TouristPage() {
   const [refundAmount, setRefundAmount] = useState(0.25);
 
   const testOrderData = [
@@ -65,4 +65,4 @@ function UserPage() {
   );
 }
 
-export default UserPage;
+export default TouristPage;
