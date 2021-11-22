@@ -3,10 +3,14 @@
 //
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
-import { ethers } from "hardhat";
+import { Signer } from "@ethersproject/abstract-signer";
+import { ethers, waffle } from "hardhat";
 import { CountryImmigration, TaxRefundStorage } from "../typechain";
 
+const provider = waffle.provider;
+
 async function main() {
+  const deployer: Signer = (await ethers.getSigners())[0];
   // Hardhat always runs the compile task when running scripts with its command
   // line interface.
   //
@@ -30,6 +34,22 @@ async function main() {
   console.log("TagRefund deployed to:", taxRefund.address);
   console.log("TH Immigration deployed to:", thCountryImmigration.address);
   console.log("Germany Immigration deployed to:", deCountryImmigration.address);
+
+  let tx = await deployer.sendTransaction({
+    to: thCountryImmigration.address,
+    value: ethers.utils.parseEther('1000')
+  });
+  await tx.wait();
+
+  tx = await deployer.sendTransaction({
+    to: deCountryImmigration.address,
+    value: ethers.utils.parseEther('1000')
+  });
+  await tx.wait();
+
+  console.log("Contract has :", ethers.utils.formatEther(await provider.getBalance(thCountryImmigration.address)), " ethers");
+  console.log("Contract has :", ethers.utils.formatEther(await provider.getBalance(deCountryImmigration.address)), " ethers");
+
 }
 
 // We recommend this pattern to be able to use async/await everywhere
