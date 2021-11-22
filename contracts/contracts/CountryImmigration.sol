@@ -35,6 +35,5 @@ contract CountryImmigration is Ownable{
         }
     }
 
-
     receive() external payable{}
 }
