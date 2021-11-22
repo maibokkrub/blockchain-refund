@@ -14,12 +14,21 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
-  const Greeter = await ethers.getContractFactory("Greeter");
-  const greeter = await Greeter.deploy("Hello, Hardhat!");
+  const taxRefundContract = await ethers.getContractFactory("TaxRefundStorage");
+  const taxRefund = await taxRefundContract.deploy();
 
-  await greeter.deployed();
+  await taxRefund.deployed();
 
-  console.log("Greeter deployed to:", greeter.address);
+  const countryImmigrationContract = await ethers.getContractFactory("CountryImmigration");
+  const thCountryImmigration = await countryImmigrationContract.deploy('TH', 700, taxRefund.address);
+  const deCountryImmigration = await countryImmigrationContract.deploy('DE', 1900, taxRefund.address);
+
+  await thCountryImmigration.deployed();
+  await deCountryImmigration.deployed();
+
+  console.log("Greeter deployed to:", taxRefund.address);
+  console.log("TH Immigration deployed to:", thCountryImmigration.address);
+  console.log("Germany Immigration deployed to:", deCountryImmigration.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
