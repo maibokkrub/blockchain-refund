@@ -5,7 +5,7 @@ function ShopPage() {
     const [country, setCountry] = useState('');
     const [shopName, setShopName] = useState('');
     const [buyerAddress, setBuyerAddress] = useState('');
-    const [productDetail, setProductDetail] = useState('');
+    const [productId, setProductId] = useState('');
     const [price, setPrice] = useState('');
 
     return (
@@ -32,7 +32,7 @@ function ShopPage() {
                     </Center>
                     <Stack spacing={3}>
                         <Input placeholder="Buyer Address" _placeholder={{ color: "#1a202c" }} size="md" variant="filled" bg="#90cdf4" color="#1a202c" value={buyerAddress} />
-                        <Input placeholder="Product Detail" _placeholder={{ color: "#1a202c" }} size="md" variant="filled" bg="#90cdf4" color="#1a202c" value={productDetail} />
+                        <Input placeholder="Product Reference ID" _placeholder={{ color: "#1a202c" }} size="md" variant="filled" bg="#90cdf4" color="#1a202c" value={productId} />
                         <Input placeholder="Price" _placeholder={{ color: "#1a202c" }} size="md" variant="filled" bg="#90cdf4" color="#1a202c" value={price} />
                     </Stack>
                     <br />
