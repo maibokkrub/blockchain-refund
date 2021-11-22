@@ -4,6 +4,7 @@
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
 import { ethers } from "hardhat";
+import { CountryImmigration, TaxRefundStorage } from "../typechain";
 
 async function main() {
   // Hardhat always runs the compile task when running scripts with its command
@@ -15,18 +16,18 @@ async function main() {
 
   // We get the contract to deploy
   const taxRefundContract = await ethers.getContractFactory("TaxRefundStorage");
-  const taxRefund = await taxRefundContract.deploy();
+  const taxRefund = (await taxRefundContract.deploy()) as TaxRefundStorage;
 
   await taxRefund.deployed();
 
   const countryImmigrationContract = await ethers.getContractFactory("CountryImmigration");
-  const thCountryImmigration = await countryImmigrationContract.deploy('TH', 700, taxRefund.address);
-  const deCountryImmigration = await countryImmigrationContract.deploy('DE', 1900, taxRefund.address);
+  const thCountryImmigration = (await countryImmigrationContract.deploy('TH', 700, taxRefund.address)) as CountryImmigration;
+  const deCountryImmigration = (await countryImmigrationContract.deploy('DE', 1900, taxRefund.address)) as CountryImmigration;
 
   await thCountryImmigration.deployed();
   await deCountryImmigration.deployed();
 
-  console.log("Greeter deployed to:", taxRefund.address);
+  console.log("TagRefund deployed to:", taxRefund.address);
   console.log("TH Immigration deployed to:", thCountryImmigration.address);
   console.log("Germany Immigration deployed to:", deCountryImmigration.address);
 }
