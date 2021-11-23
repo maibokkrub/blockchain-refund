@@ -67,7 +67,7 @@ contract TaxRefundStorage is Ownable {
     }
 
     function compareString(string memory stringA, string memory stringB)
-        internal
+        public
         pure
         returns (bool)
     {
@@ -109,7 +109,7 @@ contract TaxRefundStorage is Ownable {
     //function removeAdmin(){}
 
     function createOrder(
-        address buyer,
+        address payable buyer,
         string calldata name,
         uint256 price,
         uint256 amount
@@ -146,8 +146,7 @@ contract TaxRefundStorage is Ownable {
         returns (bool)
     {
         require(orders[id].shop.shopAddr == msg.sender, "Permission Denied");
-        require(orders[id].state != State.CONFIRMED, "Invalid State");
-        require(orders[id].state != State.REFUNDED, "Invalid State");
+        require(orders[id].state == State.PENDING, "Invalid Order's State");
         orders[id].state = State.CANCELED;
         return true;
     }
@@ -160,7 +159,7 @@ contract TaxRefundStorage is Ownable {
     {
         require(orders[id].state == State.PENDING, "Invalid Order's State");
         require(
-            compareString(admins[msg.sender].country, orders[id].shop.country),
+            !compareString(admins[msg.sender].country, orders[id].shop.country),
             "Same country as the order created"
         );
         orders[id].state = State.CONFIRMED;
@@ -175,7 +174,7 @@ contract TaxRefundStorage is Ownable {
     {
         require(orders[id].state == State.CONFIRMED, "Invalid Order's State");
         require(
-            compareString(admins[msg.sender].country, orders[id].shop.country),
+            !compareString(admins[msg.sender].country, orders[id].shop.country),
             "Same country as the order created"
         );
         orders[id].state = State.REJECTED;
@@ -188,32 +187,62 @@ contract TaxRefundStorage is Ownable {
         returns (Order[] memory)
     {
         bytes16[] memory _orderIds = _ordersByBuyer[buyer];
-        Order[] memory _order;
+        Order[] memory _order = new Order[](_orderIds.length);
         for (uint256 i = 0; i < _orderIds.length; i++) {
             _order[i] = orders[_orderIds[i]];
         }
         return _order;
     }
 
-    function refund(
+    function getRefundAmount(
         bytes16[] memory _orderIds,
-        string memory countyCode,
-        address payable buyer
-    ) public onlyAdmin {
+        string memory countryCode
+    ) public view returns (uint256) {
         uint256 refundedAmount = 0;
         for (uint256 i = 0; i < _orderIds.length; i++) {
             bytes16 index = _orderIds[i];
             uint256 _price = orders[index].price;
             uint256 _amount = orders[index].amount;
 
-            if (compareString(orders[index].shop.country, countyCode)) {
+            if (
+                compareString(orders[index].shop.country, countryCode) &&
+                orders[index].state == State.CONFIRMED
+            ) {
+                refundedAmount = refundedAmount.add((_price).mul(_amount));
+            }
+        }
+        CountryImmigration _countryImmigration = CountryImmigration(
+            payable(refundAddress[countryCode])
+        );
+        return _countryImmigration.getRefundAmount(refundedAmount);
+    }
+
+    function refund(
+        bytes16[] memory _orderIds,
+        string memory countryCode,
+        address payable buyer
+    ) public onlyAdmin returns (uint256) {
+        require(
+            !compareString(admins[msg.sender].country, countryCode),
+            "Same country as the order created"
+        );
+        uint256 refundedAmount = 0;
+        for (uint256 i = 0; i < _orderIds.length; i++) {
+            bytes16 index = _orderIds[i];
+            uint256 _price = orders[index].price;
+            uint256 _amount = orders[index].amount;
+
+            if (
+                compareString(orders[index].shop.country, countryCode) &&
+                orders[index].state == State.CONFIRMED
+            ) {
                 orders[index].state = State.REFUNDED;
                 refundedAmount = refundedAmount.add((_price).mul(_amount));
             }
         }
         CountryImmigration _countryImmigration = CountryImmigration(
-            payable(refundAddress[countyCode])
+            payable(refundAddress[countryCode])
         );
-        _countryImmigration.refund(refundedAmount, buyer);
+        return _countryImmigration.refund(refundedAmount, buyer);
     }
 }
