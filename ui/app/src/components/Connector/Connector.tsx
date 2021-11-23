@@ -1,9 +1,9 @@
 import React from "react";
 import { Button } from "@chakra-ui/react";
-import { faWallet } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useEthers } from '@usedapp/core'
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faWallet } from '@fortawesome/free-solid-svg-icons'
 
 function Connector(){ 
     const { activateBrowserWallet, account } = useEthers()

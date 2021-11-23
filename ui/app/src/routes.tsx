@@ -12,10 +12,10 @@ import GovernmentPage from './pages/Government/Government';
 function AppRouter() {
   return (
     <Routes>
-        <Route exact path='/' element={<HomePage />} />
-        <Route exact path='/tourist' element={<TouristPage />} />
-        <Route exact path='/shop' element={<ShopPage />} />
-        <Route exact path='/government' element={<GovernmentPage />} /> 
+        <Route path='/'           element={<HomePage />} />
+        <Route path='/tourist'    element={<TouristPage />} />
+        <Route path='/shop'       element={<ShopPage />} />
+        <Route path='/government' element={<GovernmentPage />} /> 
     </Routes>
   );
 }

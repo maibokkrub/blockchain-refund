@@ -2,14 +2,14 @@ import React from "react";
 import { Flex, Box, Heading, Spacer, HStack } from "@chakra-ui/react";
 
 import Connector from "../Connector/Connector";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 function NavBar(){ 
     
     return ( 
         <Flex h='64px' p={{base:'2', lg:'5'}} my='1rem' align='center' alignContent='space-between'> 
         <Box ml='5'>
-            <Heading>TBA</Heading>
+            <Heading><Link to="/"> TBA </Link></Heading>
         </Box>
         <Spacer />
         <HStack p='4'>
