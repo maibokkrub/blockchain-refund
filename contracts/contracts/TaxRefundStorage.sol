@@ -194,19 +194,20 @@ contract TaxRefundStorage is Ownable {
         return _order;
     }
 
-    function getRefundAmount(
-        bytes16[] memory _orderIds,
-        string memory countryCode
-    ) public view returns (uint256) {
+    function getRefundAmount(address buyer, string memory countryCode)
+        public
+        view
+        returns (uint256)
+    {
+        Order[] memory _order = getAllOrdersByBuyer(buyer);
         uint256 refundedAmount = 0;
-        for (uint256 i = 0; i < _orderIds.length; i++) {
-            bytes16 index = _orderIds[i];
-            uint256 _price = orders[index].price;
-            uint256 _amount = orders[index].amount;
+        for (uint256 i = 0; i < _order.length; i++) {
+            uint256 _price = _order[i].price;
+            uint256 _amount = _order[i].amount;
 
             if (
-                compareString(orders[index].shop.country, countryCode) &&
-                orders[index].state == State.CONFIRMED
+                compareString(_order[i].shop.country, countryCode) &&
+                _order[i].state == State.CONFIRMED
             ) {
                 refundedAmount = refundedAmount.add((_price).mul(_amount));
             }
@@ -217,26 +218,27 @@ contract TaxRefundStorage is Ownable {
         return _countryImmigration.getRefundAmount(refundedAmount);
     }
 
-    function refund(
-        bytes16[] memory _orderIds,
-        string memory countryCode,
-        address payable buyer
-    ) public onlyAdmin returns (uint256) {
+    function refund(address payable buyer, string memory countryCode)
+        public
+        onlyAdmin
+        returns (uint256)
+    {
         require(
             !compareString(admins[msg.sender].country, countryCode),
             "Same country as the order created"
         );
+        Order[] memory _order = getAllOrdersByBuyer(buyer);
         uint256 refundedAmount = 0;
-        for (uint256 i = 0; i < _orderIds.length; i++) {
-            bytes16 index = _orderIds[i];
-            uint256 _price = orders[index].price;
-            uint256 _amount = orders[index].amount;
+        for (uint256 i = 0; i < _order.length; i++) {
+            bytes16 id = _order[i].id;
+            uint256 _price = _order[i].price;
+            uint256 _amount = _order[i].amount;
 
             if (
-                compareString(orders[index].shop.country, countryCode) &&
-                orders[index].state == State.CONFIRMED
+                compareString(_order[i].shop.country, countryCode) &&
+                _order[i].state == State.CONFIRMED
             ) {
-                orders[index].state = State.REFUNDED;
+                orders[id].state = State.REFUNDED;
                 refundedAmount = refundedAmount.add((_price).mul(_amount));
             }
         }
