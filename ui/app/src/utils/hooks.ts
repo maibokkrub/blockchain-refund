@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useContext } from 'react';
 import { BigNumber } from '@ethersproject/bignumber';
 import { useContractCall, useContractFunction, useEthers } from "@usedapp/core";
 import { Falsy } from "@usedapp/core/dist/esm/src/model/types";
 import { MainContractInterface, MainContract } from "./contract";
 import { MAIN_CONTRACT_ADDRESS } from '../config';
 import { _orderTransformer, Order, OrderState } from './getter';
-import { DataContext } from "../components/DataContext/DataContext";
+import { useContext } from 'react';
+import { DataContext } from '../components/DataContext/DataContext';
 
 export function useAdmin(address: string | Falsy): boolean | undefined {
   const data = useContext(DataContext);
@@ -59,17 +59,30 @@ export function useOrder(address?: string | Falsy) {
   return orderList[0];
 }
 
-export function useRefundAmount(address: string| Falsy, orderIds:string[] | Falsy,country:string | Falsy){
-  const refundAmount = useContractCall(
+export function useOrderByShop(address?: string | Falsy) {
+  const {account} = useEthers(); 
+  address = address || account;
+  const orderList = useContractCall(
+    address && {
+      abi: MainContractInterface,
+      address: MAIN_CONTRACT_ADDRESS,
+      method: 'getAllOrdersByShop',
+      args: [address],
+    }
+  ) ?? [];
+  return orderList[0];
+}
+
+export function useRefundAmount(address: string| Falsy,country:string[] | Falsy): BigNumber | undefined{
+  const [refundAmount] = useContractCall(
     address && {
       abi: MainContractInterface,
       address: MAIN_CONTRACT_ADDRESS,
       method: 'getRefundAmount',
-      args: [address, orderIds, country],
-    }
-  ) ?? 0;
-
-  return refundAmount;
+      args: [address, country],
+    } 
+  ) ?? [] 
+  return refundAmount
 }
 
 export function useContractMethod(methodName: string) {

@@ -12,7 +12,6 @@ import QRCode from "react-qr-code";
 
 
 function WalletQR({isOpen, onClose}:any){
-  console.log("qr", isOpen, onClose)
     const { account } = useEthers()
 
     return ( 

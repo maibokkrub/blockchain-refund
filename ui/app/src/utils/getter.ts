@@ -1,4 +1,5 @@
 import { BigNumber } from '@ethersproject/bignumber';
+import { utils } from 'ethers';
 // id: "0x4a1512f578cce3a45704783dc21128c0"
 // name: "222"
 // amount: Object { _hex: "0x16", _isBigNumber: true }
@@ -19,8 +20,20 @@ export const _orderTransformer = (order:Order):OrderView => {
         shopName: order.shop.shopName,
         status:   order.state,
         itemAmount: order.amount.toNumber(),
-        itemPrice:  order.price.toNumber(),
-        itemTotal:  order.amount.mul(order.price).toNumber(),
+        itemPrice:  parseFloat(utils.formatEther(order.price)),
+        itemTotal:  parseFloat(utils.formatEther(order.amount.mul(order.price))),
+    }
+}
+export const _govTransformer = (order:Order) => { 
+    return { 
+        id: order.id,
+        country:  order.shop.country,
+        itemName: order.name,
+        shopName: order.shop.shopName,
+        status:   order.state,
+        itemAmount: order.amount.toNumber(),
+        itemPrice:  parseFloat(utils.formatEther(order.price)),
+        itemTotal:  parseFloat(utils.formatEther(order.amount.mul(order.price))),
     }
 }
 

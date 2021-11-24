@@ -4,6 +4,7 @@ import Table from '../../components/Table/Table';
 import { useContractMethod, useOrder, useRefundAmount } from '../../utils/hooks';
 import { useEthers } from '@usedapp/core';
 import { Order, OrderView, _orderTransformer } from '../../utils/getter';
+import {utils} from "ethers";
 
 function TouristPage() {
   const { state: claimRefundState, send: claimRefund }   = useContractMethod("refund");
@@ -12,9 +13,12 @@ function TouristPage() {
 
   const orders = useOrder();
 
+  const countries = [... new Set(orders?.map((x:Order)=> x.shop.country))] as string[]
+  console.log("countries", countries);
+
   // Todo: add more countries
-  const refund = useRefundAmount(account, orders?.map((x:Order)=>x.id), 'TH')
-  const handleClaimRefund = () => claimRefund(account, 'TH')
+  const refund  = useRefundAmount(account, countries)
+  const handleClaimRefund = () => claimRefund(countries)
 
   useEffect(() => {
     console.log("acc", account);
@@ -35,7 +39,8 @@ function TouristPage() {
   
   const allOrders = orders?.map((x:Order) => _orderTransformer(x));
   const _ordersSum = allOrders?.map((x:OrderView)=>x.itemTotal).reduce((x:number,sum:number)=>x+sum, 0);
-  console.log(_ordersSum);
+  // const _ordersSum = 0;
+
   
   return (
     <Container maxW="1300px" h='calc(100vh - 64px - 3rem)'>
@@ -51,10 +56,12 @@ function TouristPage() {
               <Flex direction='row' alignItems='center'>
                 <Flex direction='column' textAlign='right' color='teal.100' pl='5rem' > 
                   <Text fontSize="1.25rem">Total Refundable Amount</Text>
-                  <Text fontSize="1.75rem" fontWeight='bold' >{refund ?? '0'} ETH</Text>
+                  <Text fontSize="1.75rem" fontWeight='bold' >{ refund?._isBigNumber ? utils.formatEther(refund) : 'Loading..'} ETH</Text>
+                  <Text fontSize='0.75rem' color='red.300'>{claimRefundState.errorMessage}</Text>
                 </Flex>
-                <Button ml='6' px='5' colorScheme="teal" disabled={!!!refund}>Claim</Button>
+                <Button ml='6' px='5' colorScheme="teal" onClick={()=>handleClaimRefund()} isLoading={claimRefundState.status==='Mining'}>Claim</Button>
               </Flex>
+
             </Flex>
             <Flex mx='3rem'> 
               <Table

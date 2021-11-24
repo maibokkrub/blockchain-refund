@@ -10,7 +10,6 @@ import WalletQR from "../QRCode/WalletQR";
 function Connector(){
     const { activateBrowserWallet, account } = useEthers()
     const { isOpen, onOpen, onClose } = useDisclosure({defaultIsOpen:false})
-    console.log("open", onClose, onOpen )
 
     if (!account)
         return ( 
@@ -30,7 +29,7 @@ function Connector(){
             colorScheme='blue'
             leftIcon={<FontAwesomeIcon icon={faWallet}/>}
         > 
-            { account }
+            { account?.slice(0,6)+'..'+account?.slice(-4) }
         </Button>
         <WalletQR isOpen={isOpen} onClose={onClose} />
         </>
