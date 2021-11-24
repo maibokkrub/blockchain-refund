@@ -15,9 +15,9 @@ const tableColumns = [
     { title: "Country", field: "country", },
     { title: "Name", field: "itemName", },
     { title: "Shop", field: "shopName", },
-    { title: "Amount", field: "itemAmount", type: 'numeric', },
-    { title: "Price", field: "itemPrice", type: 'numeric', },
-    { title: "Total", field: "itemTotal", type: 'numeric', },
+    { title: "Amount", field: "itemAmount", type: 'numeric', filtering: false, },
+    { title: "Price", field: "itemPrice", type: 'numeric', filtering: false, },
+    { title: "Total", field: "itemTotal", type: 'numeric', filtering: false, },
     { title: "Status", field: "status", type: 'numeric', },
 ];
 
