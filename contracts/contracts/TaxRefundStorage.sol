@@ -216,32 +216,32 @@ contract TaxRefundStorage is Ownable {
         returns (uint256)
     {
         Order[] memory _order = getAllOrdersByBuyer(buyer);
-        if (_order.length == 0) {
+        if (_order.length == 0){
             return 0;
-        } else {
-            uint256 refundedAmount = 0;
-            for (uint256 i = 0; i < countries.length; i++) {
-                string memory country = countries[i];
-                uint256 eachCountry = 0;
-                for (uint256 j = 0; j < _order.length; i++) {
-                    uint256 _price = _order[i].price;
-                    uint256 _amount = _order[i].amount;
-                    if (
-                        compareString(_order[i].shop.country, country) &&
-                        _order[i].state == State.CONFIRMED
-                    ) {
-                        eachCountry = eachCountry.add((_price).mul(_amount));
-                    }
-                }
-                CountryImmigration _countryImmigration = CountryImmigration(
-                    payable(refundAddress[country])
-                );
-                refundedAmount = refundedAmount.add(
-                    _countryImmigration.getRefundAmount(eachCountry)
-                );
-            }
-            return refundedAmount;
         }
+        uint256 refundedAmount = 0;
+        for (uint256 i = 0; i < countries.length; i++) {
+            string memory country = countries[i];
+            uint256 eachCountry = 0;
+            for (uint256 j = 0; j < _order.length; j++) {
+                uint256 _price = _order[j].price;
+                uint256 _amount = _order[j].amount;
+                if (
+                    compareString(_order[j].shop.country, country) &&
+                    _order[j].state == State.CONFIRMED
+                ) {
+                    eachCountry = eachCountry.add((_price).mul(_amount));
+                }
+            }
+            CountryImmigration _countryImmigration = CountryImmigration(
+                payable(refundAddress[country])
+            );
+            refundedAmount = refundedAmount.add(
+                _countryImmigration.getRefundAmount(eachCountry)
+            );
+        }
+        return refundedAmount;
+        
     }
 
     function refund(string[] memory countries) public{
@@ -251,15 +251,15 @@ contract TaxRefundStorage is Ownable {
         for (uint256 i = 0; i < countries.length; i++) {
             uint256 eachCountry = 0;
             string memory country = countries[i];
-            for (uint256 j = 0; j < _order.length; i++) {
-                uint256 _price = _order[i].price;
-                uint256 _amount = _order[i].amount;
+            for (uint256 j = 0; j < _order.length; j++) {
+                uint256 _price = _order[j].price;
+                uint256 _amount = _order[j].amount;
                 if (
-                    compareString(_order[i].shop.country, country) &&
-                    _order[i].state == State.CONFIRMED
+                    compareString(_order[j].shop.country, country) &&
+                    _order[j].state == State.CONFIRMED
                 ) {
                     eachCountry = eachCountry.add((_price).mul(_amount));
-                    orders[_order[i].id].state = State.REFUNDED;
+                    orders[_order[j].id].state = State.REFUNDED;
                 }
             }
             CountryImmigration _countryImmigration = CountryImmigration(

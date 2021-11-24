@@ -4,6 +4,7 @@ import { expect } from "chai";
 import { init } from "../scripts/utils";
 import { CountryImmigration, TaxRefundStorage } from "../typechain";
 import { ethers, waffle } from "hardhat";
+import { BigNumber } from "@ethersproject/bignumber";
 const { provider } = waffle;
 
 describe("Normal Flow", function () {
@@ -39,7 +40,7 @@ describe("Normal Flow", function () {
         });
 
         it("Refunded amount is 0", async function () {
-            const refundAmount = await taxRefund.connect(thAdmin).getRefundAmount(await buyer.getAddress(), "DE");
+            const refundAmount = await taxRefund.connect(thAdmin).getRefundAmount(await buyer.getAddress(), ["DE"]);
             expect(refundAmount).to.equal(ethers.utils.parseEther('0'));
         });
 
@@ -87,28 +88,29 @@ describe("Normal Flow", function () {
 
     describe("Refund Order", async function () {
         it("Refunded amount is 95 ethers", async function () {
-            const refundAmount = await taxRefund.connect(thAdmin).getRefundAmount(await buyer.getAddress(), "DE");
+            const refundAmount = await taxRefund.connect(buyer).getRefundAmount(await buyer.getAddress(), ["DE"]);
             expect(refundAmount).to.equal(ethers.utils.parseEther('95'));
         });
+        
+        it("[CONFIRMED => CONFIRMED] Admin should not be able to refund other's orders", async function () {
+            await expect(taxRefund.connect(thAdmin).refund(["DE"])).to.be.revertedWith("Buyer don't have orders");
 
-        it("[CONFIRMED => CONFIRMED] German Admin Should not able to REFUND order", async function () {
-            let orders = await taxRefund.getAllOrdersByBuyer(await buyer.getAddress());
-            await expect(taxRefund.connect(deAdmin).refund(await buyer.getAddress(), "DE")).to.be.revertedWith("Same country as the order created");
-
-            orders = await taxRefund.getAllOrdersByBuyer(await buyer.getAddress());
+            const orders = await taxRefund.getAllOrdersByBuyer(await buyer.getAddress());
             expect(orders[0].state).to.equal(4);
             expect(orders[1].state).to.equal(4);
         });
 
-        it("[CONFIRMED => REFUNDED] Thailand Admin Should able to REFUND order", async function () {
+        it("[CONFIRMED => REFUNDED] Buyer should be able to refund only 1 time per order", async function () {
             let orders = await taxRefund.getAllOrdersByBuyer(await buyer.getAddress());
-            tx = await taxRefund.connect(thAdmin).refund(await buyer.getAddress(), "DE");
-            await tx.wait();
+            await expect(await taxRefund.connect(buyer).refund(["DE"])).to.changeEtherBalance(buyer,ethers.utils.parseEther('95'));
+
             orders = await taxRefund.getAllOrdersByBuyer(await buyer.getAddress());
             expect(orders[0].state).to.equal(5);
             expect(orders[1].state).to.equal(5);
-            expect(await provider.getBalance(await buyer.getAddress())).to.equal(ethers.utils.parseEther('10095'));
+
+            await expect(taxRefund.connect(buyer).refund(["DE"])).to.be.revertedWith("No Refundable Order");
         });
+
     });
 
     describe("Cancel order & Reject order", async function () {
@@ -140,18 +142,16 @@ describe("Normal Flow", function () {
         });
 
         it("Refunded amount should calculate only order #5 that is 19 ethers", async function () {
-            const refundAmount = await taxRefund.connect(thAdmin).getRefundAmount(await buyer.getAddress(), "DE");
+            const refundAmount = await taxRefund.connect(thAdmin).getRefundAmount(await buyer.getAddress(),["DE"]);
             expect(refundAmount).to.equal(ethers.utils.parseEther('19'));
         });
 
         it("[CONFIRMED => REFUNDED] Refunded only order #5", async function () {
             let orders = await taxRefund.getAllOrdersByBuyer(await buyer.getAddress());
             expect(orders[4].state).to.equal(4);
-            tx = await taxRefund.connect(thAdmin).refund(await buyer.getAddress(), "DE");
-            await tx.wait();
+            await expect(await taxRefund.connect(buyer).refund(["DE"])).to.changeEtherBalance(buyer,ethers.utils.parseEther('19'));
             orders = await taxRefund.getAllOrdersByBuyer(await buyer.getAddress());
             expect(orders[4].state).to.equal(5);
-            expect(await provider.getBalance(await buyer.getAddress())).to.equal(ethers.utils.parseEther('10114'));
         });
 
         it("All Order's state is correct", async function () {
