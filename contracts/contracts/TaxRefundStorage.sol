@@ -210,57 +210,63 @@ contract TaxRefundStorage is Ownable {
         return _order;
     }
 
-    function getRefundAmount(address buyer, string memory countryCode)
+    function getRefundAmount(address buyer, string[] memory countries)
         public
         view
         returns (uint256)
     {
         Order[] memory _order = getAllOrdersByBuyer(buyer);
-        uint256 refundedAmount = 0;
-        for (uint256 i = 0; i < _order.length; i++) {
-            uint256 _price = _order[i].price;
-            uint256 _amount = _order[i].amount;
-
-            if (
-                compareString(_order[i].shop.country, countryCode) &&
-                _order[i].state == State.CONFIRMED
-            ) {
-                refundedAmount = refundedAmount.add((_price).mul(_amount));
+        if (_order.length == 0) {
+            return 0;
+        } else {
+            uint256 refundedAmount = 0;
+            for (uint256 i = 0; i < countries.length; i++) {
+                string memory country = countries[i];
+                uint256 eachCountry = 0;
+                for (uint256 j = 0; j < _order.length; i++) {
+                    uint256 _price = _order[i].price;
+                    uint256 _amount = _order[i].amount;
+                    if (
+                        compareString(_order[i].shop.country, country) &&
+                        _order[i].state == State.CONFIRMED
+                    ) {
+                        eachCountry = eachCountry.add((_price).mul(_amount));
+                    }
+                }
+                CountryImmigration _countryImmigration = CountryImmigration(
+                    payable(refundAddress[country])
+                );
+                refundedAmount = refundedAmount.add(
+                    _countryImmigration.getRefundAmount(eachCountry)
+                );
             }
+            return refundedAmount;
         }
-        CountryImmigration _countryImmigration = CountryImmigration(
-            payable(refundAddress[countryCode])
-        );
-        return _countryImmigration.getRefundAmount(refundedAmount);
     }
 
-    function refund(address payable buyer, string memory countryCode)
-        public
-        onlyAdmin
-        returns (uint256)
-    {
-        require(
-            !compareString(admins[msg.sender].country, countryCode),
-            "Same country as the order created"
-        );
-        Order[] memory _order = getAllOrdersByBuyer(buyer);
+    function refund(string[] memory countries) public{
+        Order[] memory _order = getAllOrdersByBuyer(msg.sender);
+        require(_order.length > 0,"Buyer don't have orders");
         uint256 refundedAmount = 0;
-        for (uint256 i = 0; i < _order.length; i++) {
-            bytes16 id = _order[i].id;
-            uint256 _price = _order[i].price;
-            uint256 _amount = _order[i].amount;
-
-            if (
-                compareString(_order[i].shop.country, countryCode) &&
-                _order[i].state == State.CONFIRMED
-            ) {
-                orders[id].state = State.REFUNDED;
-                refundedAmount = refundedAmount.add((_price).mul(_amount));
+        for (uint256 i = 0; i < countries.length; i++) {
+            uint256 eachCountry = 0;
+            string memory country = countries[i];
+            for (uint256 j = 0; j < _order.length; i++) {
+                uint256 _price = _order[i].price;
+                uint256 _amount = _order[i].amount;
+                if (
+                    compareString(_order[i].shop.country, country) &&
+                    _order[i].state == State.CONFIRMED
+                ) {
+                    eachCountry = eachCountry.add((_price).mul(_amount));
+                    orders[_order[i].id].state = State.REFUNDED;
+                }
             }
+            CountryImmigration _countryImmigration = CountryImmigration(
+                payable(refundAddress[country])
+            );
+            refundedAmount = refundedAmount.add(_countryImmigration.refund(eachCountry, payable(msg.sender)));
         }
-        CountryImmigration _countryImmigration = CountryImmigration(
-            payable(refundAddress[countryCode])
-        );
-        return _countryImmigration.refund(refundedAmount, buyer);
+        require(refundedAmount != 0, "No Refundable Order");
     }
 }
