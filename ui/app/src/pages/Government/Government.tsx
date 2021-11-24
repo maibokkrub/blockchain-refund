@@ -18,6 +18,7 @@ import { useAdmin, useContractMethod, useShop } from "../../utils/hooks";
 import ApproveOrder from "./ApproveOrder";
 import ConfirmOrder from "./ConfirmOrder";
 import RejectOrder from "./RejectOrder";
+import SearchBuyer from "./SearchBuyer";
 const testOrderData = [
     {
         user_address: "0x3cds...78a592b4c",
@@ -63,11 +64,6 @@ function GovernmentPage() {
     const [pendingAmount, setPendingAmount] = useState(0.25);
     const [refundedAmount, setRefundedAmount] = useState(0.25);
     
-
-    const handleApproveOrder = () => approveOrder (buyerAddress, productId)
-    
-    console.log(isAdmin);
-
     return (
         <Container maxW="1300px" h="calc(100vh - 64px - 3rem)" >
             <HStack w='full'> 
@@ -75,7 +71,7 @@ function GovernmentPage() {
                 <RejectOrder />
                 <ConfirmOrder />
             </HStack>
-
+            <SearchBuyer />
             <HStack w='full'> 
                     {/* <Table
                         title="Order"

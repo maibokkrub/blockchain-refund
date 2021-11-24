@@ -8,13 +8,13 @@ import {
 } from "@chakra-ui/react";
 import { useContractMethod } from "../../utils/hooks";
 
-function RejectOrder() {
-    const { state, send }   = useContractMethod("rejectOrder");
+function SearchBuyer() {
+    // const { state, send }   = useContractMethod("rejectOrder");
     
     const [buyerAddress, setBuyerAddress] = useState("");
     const [productId, setProductId] = useState("");
-  
-    const handleRejectOrder = () => send(buyerAddress, productId)
+
+    const handleSearchBuyer = () => {};
 
     return (
         <VStack w='full' bg='whitesmoke' my='1' borderRadius='10px'>
@@ -25,9 +25,9 @@ function RejectOrder() {
                 paddingBottom="9px"
                 color="#1a202c"
             >
-                Reject Order
+                Search Buyer
             </Text>
-            <VStack spacing='3' >
+            <HStack w='50%' bg='whitesmoke' my='1' borderRadius='10px' paddingBottom="27px">
                 <Input
                     placeholder="Buyer Address"
                     _placeholder={{ color: "#1a202c" }}
@@ -38,30 +38,12 @@ function RejectOrder() {
                     value={buyerAddress}
                     onChange={(e)=>setBuyerAddress(e.target.value)}
                 />
-                <Input
-                    placeholder="Product Reference ID"
-                    _placeholder={{ color: "#1a202c" }}
-                    size="md"
-                    variant="filled"
-                    bg="#90cdf4"
-                    color="#1a202c"
-                    value={productId}
-                    onChange={(e)=>setProductId(e.target.value)}
-                />
-            </VStack>
-            <VStack p='2'>
-                <Button onClick={handleRejectOrder} bg="#1a202c">
-                    Reject Order
+                <Button onClick={handleSearchBuyer} bg="#1a202c">
+                    Search Buyer
                 </Button>
-                <Text color='black'> 
-                    TX Status: { state.status }
-                </Text>
-                <Text color='red'> 
-                    { state.errorMessage } 
-                </Text>
-            </VStack>
+            </HStack>
         </VStack>
     );
 }
 
-export default RejectOrder;
+export default SearchBuyer;
