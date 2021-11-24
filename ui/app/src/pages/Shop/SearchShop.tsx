@@ -14,7 +14,7 @@ const tableColumns = [
     { title: "TxID", field: "id", },
     { title: "Country", field: "country", },
     { title: "Name", field: "itemName", },
-    { title: "Shop", field: "shopName", },
+    { title: "Buyer", field: "buyerName", },
     { title: "Amount", field: "itemAmount", type: 'numeric', filtering: false, },
     { title: "Price", field: "itemPrice", type: 'numeric', filtering: false, },
     { title: "Total", field: "itemTotal", type: 'numeric', filtering: false, },

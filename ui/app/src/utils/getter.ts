@@ -30,6 +30,7 @@ export const _govTransformer = (order:Order) => {
         country:  order.shop.country,
         itemName: order.name,
         shopName: order.shop.shopName,
+        buyerName: order.buyerName,
         status:   order.state,
         itemAmount: order.amount.toNumber(),
         itemPrice:  parseFloat(utils.formatEther(order.price)),
@@ -60,6 +61,7 @@ export interface OrderView{
 export interface Order { 
     id: string; 
     name: string; 
+    buyerName: string; 
     amount: BigNumber;
     price: BigNumber;
     shop: Shop; 
