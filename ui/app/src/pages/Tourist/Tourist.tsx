@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Container, Flex, Spacer, Box, Center, Text, Image, Button } from "@chakra-ui/react";
 import Table from '../../components/Table/Table';
 import { useContractMethod, useOrder, useRefundAmount } from '../../utils/hooks';
 import { useEthers } from '@usedapp/core';
 import { Order, OrderView, _orderTransformer } from '../../utils/getter';
 import {utils} from "ethers";
+import { DataContext } from "../../components/DataContext/DataContext";
 
 function TouristPage() {
+  const data = useContext(DataContext);
+
   const { state: claimRefundState, send: claimRefund }   = useContractMethod("refund");
 
   const { account }  = useEthers(); 
@@ -39,39 +42,40 @@ function TouristPage() {
   
   const allOrders = orders?.map((x:Order) => _orderTransformer(x));
   const _ordersSum = allOrders?.map((x:OrderView)=>x.itemTotal).reduce((x:number,sum:number)=>x+sum, 0);
-  // const _ordersSum = 0;
-
   
   return (
     <Container maxW="1300px" h='calc(100vh - 64px - 3rem)'>
-
-        <Flex wrap='wrap-reverse' direction='row'>
-          <Flex w='100%' direction='column' > 
-            <Flex direction='row' alignItems='center' mx='3rem' p='3' px='3rem' bg='blackAlpha.400' borderRadius='10px'>
-              <Flex direction='column' textAlign='left' > 
-                <Text fontSize="1.25rem">Pending Orders</Text>
-                <Text fontSize="1.75rem" fontWeight='bold'>{_ordersSum} ETH</Text>
-              </Flex>
-              <Spacer/>
-              <Flex direction='row' alignItems='center'>
-                <Flex direction='column' textAlign='right' color='teal.100' pl='5rem' > 
-                  <Text fontSize="1.25rem">Total Refundable Amount</Text>
-                  <Text fontSize="1.75rem" fontWeight='bold' >{ refund?._isBigNumber ? utils.formatEther(refund) : 'Loading..'} ETH</Text>
-                  <Text fontSize='0.75rem' color='red.300'>{claimRefundState.errorMessage}</Text>
+      { !data.isShop && !data.isAdmin ? 
+        <>
+          <Flex wrap='wrap-reverse' direction='row'>
+            <Flex w='100%' direction='column' > 
+              <Flex direction='row' alignItems='center' mx='3rem' p='3' px='3rem' bg='blackAlpha.400' borderRadius='10px'>
+                <Flex direction='column' textAlign='left' > 
+                  <Text fontSize="1.25rem">Pending Orders</Text>
+                  <Text fontSize="1.75rem" fontWeight='bold'>{_ordersSum} ETH</Text>
                 </Flex>
-                <Button ml='6' px='5' colorScheme="teal" onClick={()=>handleClaimRefund()} isLoading={claimRefundState.status==='Mining'}>Claim</Button>
+                <Spacer/>
+                <Flex direction='row' alignItems='center'>
+                  <Flex direction='column' textAlign='right' color='teal.100' pl='5rem' > 
+                    <Text fontSize="1.25rem">Total Refundable Amount</Text>
+                    <Text fontSize="1.75rem" fontWeight='bold' >{ refund?._isBigNumber ? utils.formatEther(refund) : 'Loading..'} ETH</Text>
+                    <Text fontSize='0.75rem' color='red.300'>{claimRefundState.errorMessage}</Text>
+                  </Flex>
+                  <Button ml='6' px='5' colorScheme="teal" onClick={()=>handleClaimRefund()} isLoading={claimRefundState.status==='Mining'}>Claim</Button>
+                </Flex>
               </Flex>
-
-            </Flex>
-            <Flex mx='3rem'> 
-              <Table
-                title="All Order"
-                data={allOrders}
-                columns={tableColumns}
-              />
+              <Flex mx='3rem'> 
+                <Table
+                  title="All Order"
+                  data={allOrders}
+                  columns={tableColumns}
+                />
+              </Flex>
             </Flex>
           </Flex>
-        </Flex>
+        </>
+      :
+        <></>}
     </Container> 
   );
 }
