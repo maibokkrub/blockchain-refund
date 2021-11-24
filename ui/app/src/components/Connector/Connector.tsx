@@ -1,12 +1,16 @@
 import React from "react";
-import { Button } from "@chakra-ui/react";
+import { Button, useDisclosure } from "@chakra-ui/react";
 import { useEthers } from '@usedapp/core'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faWallet } from '@fortawesome/free-solid-svg-icons'
 
+import WalletQR from "../QRCode/WalletQR";
+
 function Connector(){
     const { activateBrowserWallet, account } = useEthers()
+    const { isOpen, onOpen, onClose } = useDisclosure({defaultIsOpen:false})
+    console.log("open", onClose, onOpen )
 
     if (!account)
         return ( 
@@ -19,13 +23,17 @@ function Connector(){
         </Button>
         );
     else
-        return ( 
-            <Button 
+        return (
+        <>
+        <Button 
+            onClick={onOpen}
             colorScheme='blue'
             leftIcon={<FontAwesomeIcon icon={faWallet}/>}
         > 
             { account }
         </Button>
+        <WalletQR isOpen={isOpen} onClose={onClose} />
+        </>
         );
 }
 
