@@ -34,7 +34,7 @@ function TouristPage() {
   ];
   
   const allOrders = orders?.map((x:Order) => _orderTransformer(x));
-  const _ordersSum = allOrders?.map((x:OrderView)=>x.itemTotal).reduce((x:number,sum:number)=>x+sum);
+  const _ordersSum = allOrders?.map((x:OrderView)=>x.itemTotal).reduce((x:number,sum:number)=>x+sum, 0);
   console.log(_ordersSum);
   
   return (
