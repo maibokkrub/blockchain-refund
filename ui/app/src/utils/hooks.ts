@@ -1,11 +1,14 @@
+import React, { useState, useEffect, useContext } from 'react';
 import { BigNumber } from '@ethersproject/bignumber';
 import { useContractCall, useContractFunction, useEthers } from "@usedapp/core";
 import { Falsy } from "@usedapp/core/dist/esm/src/model/types";
 import { MainContractInterface, MainContract } from "./contract";
 import { MAIN_CONTRACT_ADDRESS } from '../config';
 import { _orderTransformer, Order, OrderState } from './getter';
+import { DataContext } from "../components/DataContext/DataContext";
 
 export function useAdmin(address: string | Falsy): boolean | undefined {
+  const data = useContext(DataContext);
   const [isAdmin] =
     useContractCall(
       address && {
@@ -15,10 +18,14 @@ export function useAdmin(address: string | Falsy): boolean | undefined {
         args: [address],
       }
     ) ?? [];
+  if (isAdmin !== undefined) {
+    data.setIsAdmin(isAdmin);
+  }
   return isAdmin;
 }
 
 export function useShop(address: string | Falsy): boolean | undefined {
+  const data = useContext(DataContext);
   const [isShop] =
     useContractCall(
       address && {
@@ -28,6 +35,9 @@ export function useShop(address: string | Falsy): boolean | undefined {
         args: [address],
       }
     ) ?? [];
+    if (isShop !== undefined) {
+      data.setIsShop(isShop);
+    }
   return isShop;
 }
 
