@@ -54,21 +54,23 @@ export const createShop = async (taxRefund: TaxRefundStorage, shop: Signer, name
 
 export const init = async () => {
     const { deployer, thAdmin, deAdmin, shop, buyer } = await getAccount();
+    const shopTH = (await ethers.getSigners())[5];
     const { taxRefund, thCountryImmigration, deCountryImmigration, multicall } = await getContracts();
     await setRefundAddress(taxRefund, thCountryImmigration, deCountryImmigration);
     await createAdmin(taxRefund, thAdmin, deAdmin);
-    await createShop(taxRefund, shop, "7-Eleven", "DE");
+    await createShop(taxRefund,shop,"Grand Mall","DE");
+    await createShop(taxRefund,shopTH,"Central World","TH");
 
     let tx = await deployer.sendTransaction({
         to: thCountryImmigration.address,
-        value: ethers.utils.parseEther('1000')
+        value: ethers.utils.parseEther('4500')
     });
     await tx.wait();
 
     tx = await deployer.sendTransaction({
         to: deCountryImmigration.address,
-        value: ethers.utils.parseEther('1000')
+        value: ethers.utils.parseEther('4500')
     });
     await tx.wait();
-    return { deployer, thAdmin, deAdmin, shop, buyer, taxRefund, thCountryImmigration, deCountryImmigration, multicall };
+    return { deployer, thAdmin, deAdmin, shop, buyer,shopTH, taxRefund, thCountryImmigration, deCountryImmigration, multicall };
 };
