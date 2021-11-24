@@ -43,25 +43,45 @@ describe("Normal Flow", function () {
             expect(refundAmount).to.equal(ethers.utils.parseEther('0'));
         });
 
-        it("[PENDING => PENDING] German Admin Should not able to CONFIRM order", async function () {
+        it("[PENDING => PENDING] Thailand Admin Should not able to APPROVE order", async function () {
             let orders = await taxRefund.getAllOrdersByBuyer(await buyer.getAddress());
-            await expect(taxRefund.connect(deAdmin).confirmOrder(await buyer.getAddress(), orders[0].id)).to.be.revertedWith("Same country as the order created");
-            await expect(taxRefund.connect(deAdmin).confirmOrder(await buyer.getAddress(), orders[1].id)).to.be.revertedWith("Same country as the order created");
-
+            await expect(taxRefund.connect(thAdmin).approveOrder(await buyer.getAddress(), orders[0].id)).to.be.revertedWith("Different country as the order created");
+            await expect(taxRefund.connect(thAdmin).approveOrder(await buyer.getAddress(), orders[1].id)).to.be.revertedWith("Different country as the order created");
             orders = await taxRefund.getAllOrdersByBuyer(await buyer.getAddress());
             expect(orders[0].state).to.equal(0);
             expect(orders[1].state).to.equal(0);
         });
 
-        it("[PENDING => CONFIRMED] Thailand Admin Should able to CONFIRM order", async function () {
+        it("[PENDING => APPROVED] German Admin Should able to APPROVE order", async function () {
+            let orders = await taxRefund.getAllOrdersByBuyer(await buyer.getAddress());
+            tx = await taxRefund.connect(deAdmin).approveOrder(await buyer.getAddress(), orders[0].id);
+            await tx.wait();
+            tx = await taxRefund.connect(deAdmin).approveOrder(await buyer.getAddress(), orders[1].id);
+            await tx.wait();
+            orders = await taxRefund.getAllOrdersByBuyer(await buyer.getAddress());
+            expect(orders[0].state).to.equal(3);
+            expect(orders[1].state).to.equal(3);
+        });
+
+
+        it("[APPROVED => APPROVED] German Admin Should not able to CONFIRM order", async function () {
+            let orders = await taxRefund.getAllOrdersByBuyer(await buyer.getAddress());
+            await expect(taxRefund.connect(deAdmin).confirmOrder(await buyer.getAddress(), orders[0].id)).to.be.revertedWith("Same country as the order created");
+            await expect(taxRefund.connect(deAdmin).confirmOrder(await buyer.getAddress(), orders[1].id)).to.be.revertedWith("Same country as the order created");
+            orders = await taxRefund.getAllOrdersByBuyer(await buyer.getAddress());
+            expect(orders[0].state).to.equal(3);
+            expect(orders[1].state).to.equal(3);
+        });
+
+        it("[APPROVED => CONFIRMED] Thailand Admin Should able to CONFIRM order", async function () {
             let orders = await taxRefund.getAllOrdersByBuyer(await buyer.getAddress());
             tx = await taxRefund.connect(thAdmin).confirmOrder(await buyer.getAddress(), orders[0].id);
             await tx.wait();
             tx = await taxRefund.connect(thAdmin).confirmOrder(await buyer.getAddress(), orders[1].id);
             await tx.wait();
             orders = await taxRefund.getAllOrdersByBuyer(await buyer.getAddress());
-            expect(orders[0].state).to.equal(2);
-            expect(orders[1].state).to.equal(2);
+            expect(orders[0].state).to.equal(4);
+            expect(orders[1].state).to.equal(4);
         });
     });
 
@@ -76,8 +96,8 @@ describe("Normal Flow", function () {
             await expect(taxRefund.connect(deAdmin).refund(await buyer.getAddress(), "DE")).to.be.revertedWith("Same country as the order created");
 
             orders = await taxRefund.getAllOrdersByBuyer(await buyer.getAddress());
-            expect(orders[0].state).to.equal(2);
-            expect(orders[1].state).to.equal(2);
+            expect(orders[0].state).to.equal(4);
+            expect(orders[1].state).to.equal(4);
         });
 
         it("[CONFIRMED => REFUNDED] Thailand Admin Should able to REFUND order", async function () {
@@ -85,13 +105,13 @@ describe("Normal Flow", function () {
             tx = await taxRefund.connect(thAdmin).refund(await buyer.getAddress(), "DE");
             await tx.wait();
             orders = await taxRefund.getAllOrdersByBuyer(await buyer.getAddress());
-            expect(orders[0].state).to.equal(4);
-            expect(orders[1].state).to.equal(4);
+            expect(orders[0].state).to.equal(5);
+            expect(orders[1].state).to.equal(5);
             expect(await provider.getBalance(await buyer.getAddress())).to.equal(ethers.utils.parseEther('10095'));
         });
     });
 
-    describe("Shop cancel order #3", async function () {
+    describe("Cancel order & Reject order", async function () {
         before(async function () {
             tx = await taxRefund.connect(shop).createOrder(await buyer.getAddress(), "Louis Vuitton", ethers.utils.parseEther('100'), 5);
             await tx.wait();
@@ -101,12 +121,14 @@ describe("Normal Flow", function () {
             await tx.wait();
         });
 
-        it("[PENDING => CANCELED] Shop should able to CANCELED order, Thailand admin confirm order #4", async function () {
+        it("Shop cancel order #3, German admin reject order #4, Thailand admin confirm order #5", async function () {
             let orders = await taxRefund.getAllOrdersByBuyer(await buyer.getAddress());
 
             tx = await taxRefund.connect(shop).cancelOrder(await buyer.getAddress(), orders[2].id);
             await tx.wait();
-            tx = await taxRefund.connect(thAdmin).confirmOrder(await buyer.getAddress(), orders[3].id);
+            tx = await taxRefund.connect(deAdmin).rejectOrder(await buyer.getAddress(), orders[3].id);
+            await tx.wait();
+            tx = await taxRefund.connect(deAdmin).approveOrder(await buyer.getAddress(), orders[4].id);
             await tx.wait();
             tx = await taxRefund.connect(thAdmin).confirmOrder(await buyer.getAddress(), orders[4].id);
             await tx.wait();
@@ -114,24 +136,7 @@ describe("Normal Flow", function () {
             orders = await taxRefund.getAllOrdersByBuyer(await buyer.getAddress());
             expect(orders[2].state).to.equal(1);
             expect(orders[3].state).to.equal(2);
-            expect(orders[4].state).to.equal(2);
-        });
-
-        it("Refunded amount should calculate only order #4 and #5 that is 38 ethers", async function () {
-            let orders = await taxRefund.getAllOrdersByBuyer(await buyer.getAddress());
-            const refundAmount = await taxRefund.connect(thAdmin).getRefundAmount(await buyer.getAddress(), "DE");
-            expect(refundAmount).to.equal(ethers.utils.parseEther('38'));
-        });
-
-        it("[CONFIRMED => REJECTED] Thailand admin should be able to REJECT order, But German Admin can't", async function () {
-            let orders = await taxRefund.getAllOrdersByBuyer(await buyer.getAddress());
-            await expect(taxRefund.connect(deAdmin).rejectOrder(await buyer.getAddress(), orders[3].id)).to.be.revertedWith('Same country as the order created');
-
-            tx = await taxRefund.connect(thAdmin).rejectOrder(await buyer.getAddress(), orders[3].id);
-            await tx.wait();
-            orders = await taxRefund.getAllOrdersByBuyer(await buyer.getAddress());
-            expect(orders[3].state).to.equal(3);
-            expect(orders[4].state).to.equal(2);
+            expect(orders[4].state).to.equal(4);
         });
 
         it("Refunded amount should calculate only order #5 that is 19 ethers", async function () {
@@ -141,20 +146,21 @@ describe("Normal Flow", function () {
 
         it("[CONFIRMED => REFUNDED] Refunded only order #5", async function () {
             let orders = await taxRefund.getAllOrdersByBuyer(await buyer.getAddress());
+            expect(orders[4].state).to.equal(4);
             tx = await taxRefund.connect(thAdmin).refund(await buyer.getAddress(), "DE");
             await tx.wait();
             orders = await taxRefund.getAllOrdersByBuyer(await buyer.getAddress());
-            expect(orders[4].state).to.equal(4);
+            expect(orders[4].state).to.equal(5);
             expect(await provider.getBalance(await buyer.getAddress())).to.equal(ethers.utils.parseEther('10114'));
         });
 
         it("All Order's state is correct", async function () {
             let orders = await taxRefund.getAllOrdersByBuyer(await buyer.getAddress());
-            expect(orders[0].state).to.equal(4);
-            expect(orders[1].state).to.equal(4);
+            expect(orders[0].state).to.equal(5);
+            expect(orders[1].state).to.equal(5);
             expect(orders[2].state).to.equal(1);
-            expect(orders[3].state).to.equal(3);
-            expect(orders[4].state).to.equal(4);
+            expect(orders[3].state).to.equal(2);
+            expect(orders[4].state).to.equal(5);
         });
     });
 
