@@ -17,6 +17,7 @@ import { useContractCall, useContractFunction, useEthers } from "@usedapp/core";
 import { useAdmin, useContractMethod, useShop } from "../../utils/hooks";
 import ApproveOrder from "./ApproveOrder";
 import ConfirmOrder from "./ConfirmOrder";
+import RejectOrder from "./RejectOrder";
 const testOrderData = [
     {
         user_address: "0x3cds...78a592b4c",
@@ -71,11 +72,11 @@ function GovernmentPage() {
         <Container maxW="1300px" h="calc(100vh - 64px - 3rem)" >
             <HStack w='full'> 
                 <ApproveOrder />
+                <RejectOrder />
                 <ConfirmOrder />
             </HStack>
 
             <HStack w='full'> 
-                <Box w="660px" p="4">
                     {/* <Table
                         title="Order"
                         data={testOrderData}
@@ -105,7 +106,6 @@ function GovernmentPage() {
                         <Spacer />
                         <Spacer />
                     </Center> */}
-                </Box>
             </HStack>
         </Container>
     );

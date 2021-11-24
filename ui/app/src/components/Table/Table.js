@@ -17,9 +17,9 @@ function Table(props) {
             data = {props.data}
             columns = {props.columns}
             options = {{ 
-                search: false, 
+                search: true, 
                 paging: true, 
-                filtering: false, 
+                filtering: true, 
                 exportButton: false,
                 pageSize: 8,
                 pageSizeOptions: [8, 16, 24],

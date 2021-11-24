@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Flex, Spacer, Box, Center, Text, Image, Button } from "@chakra-ui/react";
 import Table from '../../components/Table/Table';
-import { useOrder, useRefundAmount } from '../../utils/hooks';
+import { useContractMethod, useOrder, useRefundAmount } from '../../utils/hooks';
 import { useEthers } from '@usedapp/core';
-import { Order, _orderTransformer } from '../../utils/getter';
+import { Order, OrderView, _orderTransformer } from '../../utils/getter';
 
 function TouristPage() {
+  const { state: claimRefundState, send: claimRefund }   = useContractMethod("refund");
 
-  const [refundableAmount, setRefundableAmount] = useState(0.25);
   const { account }  = useEthers(); 
 
   const orders = useOrder();
-  const refund = useRefundAmount(account, orders?.map((x:Order)=>x.id), 'TH');
+
+  // Todo: add more countries
+  const refund = useRefundAmount(account, orders?.map((x:Order)=>x.id), 'TH')
+  const handleClaimRefund = () => claimRefund(account, 'TH')
 
   useEffect(() => {
     console.log("acc", account);
@@ -30,50 +33,38 @@ function TouristPage() {
     { title: "Status", field: "status", type: 'numeric', },
   ];
   
-  const testAllOrderData = orders?.map((x:Order) => _orderTransformer(x));
-  const testRefundableOrderData = [
-    { country: "USA", shop_name: "Walmart", total: 25.15, vat: 1.76 },
-    { country: "USA", shop_name: "Amazon", total: 19.09, vat: 1.34 },
-    { country: "USA", shop_name: "Apple", total: 12.43, vat: 0.87 },
-  ];
+  const allOrders = orders?.map((x:Order) => _orderTransformer(x));
+  const _ordersSum = allOrders?.map((x:OrderView)=>x.itemTotal).reduce((x:number,sum:number)=>x+sum);
+  console.log(_ordersSum);
   
-
   return (
     <Container maxW="1300px" h='calc(100vh - 64px - 3rem)'>
 
         <Flex wrap='wrap-reverse' direction='row'>
           <Flex w='100%' direction='column' > 
-            <Flex direction='row' alignItems='center'>
-              <Spacer />
-              <Flex direction='column' textAlign='right' mx='2rem'> 
+            <Flex direction='row' alignItems='center' mx='3rem' p='3' px='3rem' bg='blackAlpha.400' borderRadius='10px'>
+              <Flex direction='column' textAlign='left' > 
                 <Text fontSize="1.25rem">Pending Orders</Text>
-                <Text fontSize="1.75rem" fontWeight='bold'>{refundableAmount} ETH</Text>
+                <Text fontSize="1.75rem" fontWeight='bold'>{_ordersSum} ETH</Text>
               </Flex>
-            </Flex>
-            <Table
-              title="All Order"
-              data={testAllOrderData}
-              columns={tableColumns}
-            />
-          </Flex>
-          <Flex w='100%' direction='column' >
-            <Flex direction='row' alignItems='center' mx='2rem'>
-            <Spacer />
+              <Spacer/>
+              <Flex direction='row' alignItems='center'>
                 <Flex direction='column' textAlign='right' color='teal.100' pl='5rem' > 
                   <Text fontSize="1.25rem">Total Refundable Amount</Text>
-                  <Text fontSize="1.75rem" fontWeight='bold' >{refundableAmount} ETH</Text>
+                  <Text fontSize="1.75rem" fontWeight='bold' >{refund ?? '0'} ETH</Text>
                 </Flex>
-                <Button ml='6' px='5' colorScheme="teal">Claim</Button>
+                <Button ml='6' px='5' colorScheme="teal" disabled={!!!refund}>Claim</Button>
+              </Flex>
             </Flex>
-            <Table
-              title="Refundable Order"
-              data={testRefundableOrderData}
-              columns={tableColumns}
-            />
-          </Flex> 
-
+            <Flex mx='3rem'> 
+              <Table
+                title="All Order"
+                data={allOrders}
+                columns={tableColumns}
+              />
+            </Flex>
+          </Flex>
         </Flex>
-
     </Container> 
   );
 }

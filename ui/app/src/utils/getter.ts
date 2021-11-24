@@ -14,13 +14,13 @@ import { BigNumber } from '@ethersproject/bignumber';
 // OUTPUT country, itemName, amount, price, total, status
 export const _orderTransformer = (order:Order):OrderView => { 
     return { 
-        country: order.shop.country,
+        country:  order.shop.country,
         itemName: order.name,
         shopName: order.shop.shopName,
-        status: order.state,
+        status:   order.state,
         itemAmount: order.amount.toNumber(),
-        itemPrice: order.price.toNumber(),
-        itemTotal: order.amount.mul(order.price).toNumber(),
+        itemPrice:  order.price.toNumber(),
+        itemTotal:  order.amount.mul(order.price).toNumber(),
     }
 }
 

@@ -53,7 +53,7 @@ export function useRefundAmount(address: string| Falsy, orderIds:string[] | Fals
       method: 'getRefundAmount',
       args: [address, orderIds, country],
     }
-  ) ?? [];
+  ) ?? 0;
 
   return refundAmount;
 }

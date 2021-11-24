@@ -5,7 +5,7 @@ import { useEthers } from '@usedapp/core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faWallet } from '@fortawesome/free-solid-svg-icons'
 
-function Connector(){ 
+function Connector(){
     const { activateBrowserWallet, account } = useEthers()
 
     if (!account)
@@ -21,7 +21,6 @@ function Connector(){
     else
         return ( 
             <Button 
-            disabled
             colorScheme='blue'
             leftIcon={<FontAwesomeIcon icon={faWallet}/>}
         > 
