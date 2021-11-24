@@ -1,28 +1,40 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, Flex, Spacer, Box, Stack, Input, Button, Center, Text } from "@chakra-ui/react";
 import Table from '../../components/Table/Table';
+import { useContractCall, useContractFunction, useEthers } from '@usedapp/core';
+import { MainContract } from '../../contract';
+
+const testOrderData = [
+  { user_address: "0x3cds...78a592b4c", shop_name: "Ari Shop", total: 24.23, vat: 1.70, status: 'COMPLETED' },
+  { user_address: "0x3cds...78a592b4c", shop_name: "Garrett", total: 49.10, vat: 3.44, status: 'REFUNDED' },
+  { user_address: "0x3cds...78a592b4c", shop_name: "KFC", total: 18.43, vat: 1.29, status: 'REFUNDED' },
+];
+
+const testOrderColumns = [
+  { title: "User Address", field: "user_address", },
+  { title: "Shop", field: "shop_name", },
+  { title: "Total", field: "total", type: 'numeric', },
+  { title: "VAT", field: "vat", type: 'numeric', },
+  { title: "Status", field: "status", type: 'numeric', },
+];
 
 function GovernmentPage() {
+  const { account } = useEthers()
+
   const [buyerAddress, setBuyerAddress] = useState('');
   const [billNo, setBillNo] = useState('');
   const [productId, setProductId] = useState('');
   const [price, setPrice] = useState('');
   const [pendingAmount, setPendingAmount] = useState(0.25);
   const [refundedAmount, setRefundedAmount] = useState(0.25);
-
-  const testOrderData = [
-    { user_address: "0x3cds...78a592b4c", shop_name: "Ari Shop", total: 24.23, vat: 1.70, status: 'COMPLETED' },
-    { user_address: "0x3cds...78a592b4c", shop_name: "Garrett", total: 49.10, vat: 3.44, status: 'REFUNDED' },
-    { user_address: "0x3cds...78a592b4c", shop_name: "KFC", total: 18.43, vat: 1.29, status: 'REFUNDED' },
-  ];
-
-  const testOrderColumns = [
-    { title: "User Address", field: "user_address", },
-    { title: "Shop", field: "shop_name", },
-    { title: "Total", field: "total", type: 'numeric', },
-    { title: "VAT", field: "vat", type: 'numeric', },
-    { title: "Status", field: "status", type: 'numeric', },
-  ];
+  
+  useEffect(() => {  
+    if( account !== null ) {
+      const isAdmin = async() =>(await MainContract.isAdmin(account as string));
+      // const [_isAdmin] = useContractFunction(MainContract, 'isAdmin'); 
+      console.log(isAdmin());
+    }
+  }, [account] );
 
   return (
     <Container maxW="1300px" h='calc(100vh - 64px - 3rem)'>

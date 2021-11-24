@@ -55,7 +55,8 @@
     ]
   },
   "devDependencies": {
-    "gh-pages": "^3.2.3"
+    "gh-pages": "^3.2.3",
+    "typechain": "^6.0.4"
   },
   "homepage": "https://maibokkrub.github.io/blockchain-refund/"
 }

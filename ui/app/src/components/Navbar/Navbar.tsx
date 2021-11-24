@@ -2,7 +2,7 @@ import React from "react";
 import { Flex, Box, Heading, Spacer, HStack } from "@chakra-ui/react";
 
 import Connector from "../Connector/Connector";
-import { Link, NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function NavBar(){ 
     
