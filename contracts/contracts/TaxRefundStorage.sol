@@ -7,9 +7,10 @@ import "./CountryImmigration.sol";
 
 enum State {
     PENDING,
-    CANCELED,
-    CONFIRMED,
-    REJECTED,
+    CANCELED, //SHOP CANCEL ORDER
+    REJECTED, //ADMIN REJECT ORDER'S REFUNDS
+    APPROVED, //ORDER IS REFUNABLE
+    CONFIRMED, //ORDER ARRIVED AT OTHER COUNTRY
     REFUNDED
 }
 
@@ -151,7 +152,7 @@ contract TaxRefundStorage is Ownable {
         return true;
     }
 
-    function confirmOrder(address buyer, bytes16 id)
+    function rejectOrder(address buyer, bytes16 id)
         public
         onlyAdmin
         buyerHasOrder(buyer, id)
@@ -159,25 +160,40 @@ contract TaxRefundStorage is Ownable {
     {
         require(orders[id].state == State.PENDING, "Invalid Order's State");
         require(
-            !compareString(admins[msg.sender].country, orders[id].shop.country),
-            "Same country as the order created"
+            compareString(admins[msg.sender].country, orders[id].shop.country),
+            "Different country as the order created"
         );
-        orders[id].state = State.CONFIRMED;
+        orders[id].state = State.REJECTED;
         return true;
     }
 
-    function rejectOrder(address buyer, bytes16 id)
+    function approveOrder(address buyer, bytes16 id)
         public
         onlyAdmin
         buyerHasOrder(buyer, id)
         returns (bool)
     {
-        require(orders[id].state == State.CONFIRMED, "Invalid Order's State");
+        require(orders[id].state == State.PENDING, "Invalid Order's State");
+        require(
+            compareString(admins[msg.sender].country, orders[id].shop.country),
+            "Different country as the order created"
+        );
+        orders[id].state = State.APPROVED;
+        return true;
+    }
+
+    function confirmOrder(address buyer, bytes16 id)
+        public
+        onlyAdmin
+        buyerHasOrder(buyer, id)
+        returns (bool)
+    {
+        require(orders[id].state == State.APPROVED, "Invalid Order's State");
         require(
             !compareString(admins[msg.sender].country, orders[id].shop.country),
             "Same country as the order created"
         );
-        orders[id].state = State.REJECTED;
+        orders[id].state = State.CONFIRMED;
         return true;
     }
 
