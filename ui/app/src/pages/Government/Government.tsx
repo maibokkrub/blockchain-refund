@@ -9,14 +9,14 @@ import {
     Button,
     Center,
     Text,
+    VStack,
+    HStack,
 } from "@chakra-ui/react";
 import Table from "../../components/Table/Table";
 import { useContractCall, useContractFunction, useEthers } from "@usedapp/core";
-import MainContractABI from "../../abi/main_contract.abi.json";
-import { MainContract } from "../../utils/contract";
-import { MAIN_CONTRACT_ADDRESS } from "../../config";
-import { Interface } from "@ethersproject/abi";
-import { useAdmin, useShop } from "../../utils/hooks";
+import { useAdmin, useContractMethod, useShop } from "../../utils/hooks";
+import ApproveOrder from "./ApproveOrder";
+import ConfirmOrder from "./ConfirmOrder";
 const testOrderData = [
     {
         user_address: "0x3cds...78a592b4c",
@@ -52,93 +52,37 @@ const testOrderColumns = [
 function GovernmentPage() {
     const { account } = useEthers();
     const isAdmin = useAdmin(account);
+
+    const { state: approveOrderState, send: approveOrder }   = useContractMethod("confirmOrder");
+    
     const [buyerAddress, setBuyerAddress] = useState("");
-    const [billNo, setBillNo] = useState("");
     const [productId, setProductId] = useState("");
-    const [price, setPrice] = useState("");
+    // const [billNo, setBillNo] = useState("");
+    // const [price, setPrice] = useState("");
     const [pendingAmount, setPendingAmount] = useState(0.25);
     const [refundedAmount, setRefundedAmount] = useState(0.25);
-    // useEffect(() => {
-    //     if (active) {
-    //         console.log(isAdmin);
-    //     }
-    // }, [account]);
+    
+
+    const handleApproveOrder = () => approveOrder (buyerAddress, productId)
+    
     console.log(isAdmin);
 
     return (
-        <Container maxW="1300px" h="calc(100vh - 64px - 3rem)">
-            <Flex>
-                <Spacer />
-                <Box
-                    w="480px"
-                    p="4"
-                    bg="white"
-                    paddingBottom="45px"
-                    borderRadius="10px"
-                >
-                    <Center>
-                        <Text
-                            fontSize="28px"
-                            as="b"
-                            paddingTop="27px"
-                            paddingBottom="18px"
-                            color="#1a202c"
-                        >
-                            Confirm Order
-                        </Text>
-                    </Center>
-                    <Stack spacing={3}>
-                        <Input
-                            placeholder="Buyer Address"
-                            _placeholder={{ color: "#1a202c" }}
-                            size="md"
-                            variant="filled"
-                            bg="#90cdf4"
-                            color="#1a202c"
-                            value={buyerAddress}
-                        />
-                        <Input
-                            placeholder="Bill Number"
-                            _placeholder={{ color: "#1a202c" }}
-                            size="md"
-                            variant="filled"
-                            bg="#90cdf4"
-                            color="#1a202c"
-                            value={billNo}
-                        />
-                        <Input
-                            placeholder="Product Reference ID"
-                            _placeholder={{ color: "#1a202c" }}
-                            size="md"
-                            variant="filled"
-                            bg="#90cdf4"
-                            color="#1a202c"
-                            value={productId}
-                        />
-                        <Input
-                            placeholder="Price"
-                            _placeholder={{ color: "#1a202c" }}
-                            size="md"
-                            variant="filled"
-                            bg="#90cdf4"
-                            color="#1a202c"
-                            value={price}
-                        />
-                    </Stack>
-                    <br />
-                    <Center>
-                        <Button bg="#1a202c">Confirm Order</Button>
-                    </Center>
-                </Box>
-                <Spacer />
+        <Container maxW="1300px" h="calc(100vh - 64px - 3rem)" >
+            <HStack w='full'> 
+                <ApproveOrder />
+                <ConfirmOrder />
+            </HStack>
+
+            <HStack w='full'> 
                 <Box w="660px" p="4">
-                    <Table
+                    {/* <Table
                         title="Order"
                         data={testOrderData}
                         columns={testOrderColumns}
-                    />
+                    /> */}
                     <br />
-                    <Center>
+                    {/* <Center>
                         <Spacer />
                         <Spacer />
                         <Box bg="salmon" p="4" borderRadius="10px">
@@ -160,9 +104,9 @@ function GovernmentPage() {
                         </Box>
                         <Spacer />
                         <Spacer />
-                    </Center>
+                    </Center> */}
                 </Box>
-            </Flex>
+            </HStack>
         </Container>
     );
 }

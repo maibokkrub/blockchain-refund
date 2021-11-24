@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Container,
     Flex,
@@ -9,23 +9,27 @@ import {
     Button,
     Center,
     Text,
+    VStack,
 } from "@chakra-ui/react";
 import { useContractMethod } from "../../utils/hooks";
 import { useEthers } from "@usedapp/core";
 
 function ShopPage() {
-    const { state, send: createShop } = useContractMethod("createShop");
-    const [country, setCountry] = useState("");
-    const [shopName, setShopName] = useState("");
-    const [shopAddress, setShopAddress] = useState("");
-    const [buyerAddress, setBuyerAddress] = useState("");
-    const [productId, setProductId] = useState("");
-    const [price, setPrice] = useState("");
+    const { state: createShopState, send: createShop }   = useContractMethod("createShop");
+    const { state: createOrderState,send: createOrder}   = useContractMethod("createOrder");
 
-    function handleCreateShop() {
-        console.log("5555");
-        createShop(shopAddress, shopName, country);
-    }
+    const [country, setCountry]         = useState("");
+    const [shopName, setShopName]       = useState("");
+    const [shopAddress, setShopAddress] = useState("");
+
+    const [buyerAddress, setBuyerAddress] = useState("");
+    const [productId, setProductId]       = useState("");
+    const [itemPrice, setItemPrice]       = useState("");
+    const [itemAmount, setItemAmount]     = useState("");
+    
+    const handleCreateShop = () => createShop(shopAddress, shopName, country)
+    const handleCreateOrder= () => createOrder(buyerAddress, productId, itemPrice, itemAmount)
+    
     return (
         <Container maxW="1300px" h="calc(100vh - 64px - 3rem)">
             <Flex>
@@ -81,11 +85,17 @@ function ShopPage() {
                         />
                     </Stack>
                     <br />
-                    <Center>
+                    <VStack>
                         <Button onClick={handleCreateShop} bg="#1a202c">
                             Create Shop
                         </Button>
-                    </Center>
+                        <Text color='black'> 
+                            { createShopState.status }
+                        </Text>
+                        <Text color='red'> 
+                            { createShopState.errorMessage } 
+                        </Text>
+                    </VStack>
                 </Box>
                 <Spacer />
                 <Box
@@ -115,6 +125,7 @@ function ShopPage() {
                             bg="#90cdf4"
                             color="#1a202c"
                             value={buyerAddress}
+                            onChange={(e)=>setBuyerAddress(e.target.value)}
                         />
                         <Input
                             placeholder="Product Reference ID"
@@ -124,6 +135,7 @@ function ShopPage() {
                             bg="#90cdf4"
                             color="#1a202c"
                             value={productId}
+                            onChange={(e)=>setProductId(e.target.value)}
                         />
                         <Input
                             placeholder="Price"
@@ -132,13 +144,32 @@ function ShopPage() {
                             variant="filled"
                             bg="#90cdf4"
                             color="#1a202c"
-                            value={price}
+                            value={itemPrice}
+                            onChange={(e)=>setItemPrice(e.target.value)}
+                        />
+                        <Input
+                            placeholder="Amount"
+                            _placeholder={{ color: "#1a202c" }}
+                            size="md"
+                            variant="filled"
+                            bg="#90cdf4"
+                            color="#1a202c"
+                            value={itemAmount}
+                            onChange={(e)=>setItemAmount(e.target.value)}
                         />
                     </Stack>
                     <br />
-                    <Center>
-                        <Button bg="#1a202c">Create Order</Button>
-                    </Center>
+                    <VStack>
+                        <Button onClick={handleCreateOrder} bg="#1a202c">
+                            Create Order
+                        </Button>
+                        <Text color='black'> 
+                            { createOrderState.status }
+                        </Text>
+                        <Text color='red'> 
+                            { createOrderState.errorMessage } 
+                        </Text>
+                    </VStack>
                 </Box>
                 <Spacer />
             </Flex>
