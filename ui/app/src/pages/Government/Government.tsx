@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
     Container,
     Flex,
@@ -20,23 +20,30 @@ import RejectOrder from "./RejectOrder";
 import SearchBuyer from "./SearchBuyer";
 import CreateShop from "./CreateShop";
 import { _govTransformer } from "../../utils/getter";
-
+import { DataContext } from "../../components/DataContext/DataContext";
 
 function GovernmentPage() {
     const { account } = useEthers();
     const isAdmin = useAdmin(account);
+    const data = useContext(DataContext);
 
     return (
         <Container maxW="1300px" h="calc(100vh - 64px - 3rem)" >
-            <HStack w='full'>
-                <CreateShop />
-            </HStack>
-            <HStack w='full'> 
-                <ApproveOrder />
-                <RejectOrder />
-                <ConfirmOrder />
-            </HStack>
-            <SearchBuyer />
+            { data.isAdmin ? 
+                <>
+                    <HStack w='full'>
+                        <CreateShop />
+                    </HStack>
+                    <HStack w='full'> 
+                        <ApproveOrder />
+                        <RejectOrder />
+                        <ConfirmOrder />
+                    </HStack>
+                    <SearchBuyer />
+                </>
+                : 
+                <></>
+            }
         </Container>
     );
 }
