@@ -1,4 +1,4 @@
-import { TaxRefundStorage, CountryImmigration } from "../typechain";
+import { TaxRefundStorage, CountryImmigration, Multicall } from "../typechain";
 import { Signer } from "@ethersproject/abstract-signer";
 
 export interface accounts {
@@ -13,4 +13,5 @@ export interface contracts {
     taxRefund: TaxRefundStorage;
     thCountryImmigration: CountryImmigration;
     deCountryImmigration: CountryImmigration;
+    multicall: Multicall;
 }

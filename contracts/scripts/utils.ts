@@ -1,10 +1,11 @@
 import CountryImmigrationABI from "../artifacts/contracts/CountryImmigration.sol/CountryImmigration.json";
 import TaxRefundStorageABI from "../artifacts/contracts/TaxRefundStorage.sol/TaxRefundStorage.json";
+import MultiCallABI from "../artifacts/contracts/Multicall.sol/Multicall.json";
 import { ethers, waffle } from "hardhat";
 import { TransactionResponse } from "@ethersproject/abstract-provider";
 import { Signer } from "@ethersproject/abstract-signer";
 import { accounts, contracts } from "./interface";
-import { CountryImmigration, TaxRefundStorage } from "../typechain";
+import { CountryImmigration, TaxRefundStorage, Multicall } from "../typechain";
 
 const { deployContract, provider } = waffle;
 export const getAccount = async (): Promise<accounts> => {
@@ -23,7 +24,10 @@ export const getContracts = async (): Promise<contracts> => {
     const deCountryImmigration = (await deployContract(deployer, CountryImmigrationABI, ['DE', 1900, taxRefund.address])) as CountryImmigration;
     await thCountryImmigration.deployed();
     await deCountryImmigration.deployed();
-    return { taxRefund, thCountryImmigration, deCountryImmigration } as contracts;
+
+    const multicall = (await deployContract(deployer, MultiCallABI)) as Multicall;
+    await multicall.deployed();
+    return { taxRefund, thCountryImmigration, deCountryImmigration, multicall } as contracts;
 };
 
 export const setRefundAddress = async (taxRefund: TaxRefundStorage, thCountryImmigration: CountryImmigration, deCountryImmigration: CountryImmigration) => {
@@ -50,7 +54,7 @@ export const createShop = async (taxRefund: TaxRefundStorage, shop: Signer, name
 
 export const init = async () => {
     const { deployer, thAdmin, deAdmin, shop, buyer } = await getAccount();
-    const { taxRefund, thCountryImmigration, deCountryImmigration } = await getContracts();
+    const { taxRefund, thCountryImmigration, deCountryImmigration, multicall } = await getContracts();
     await setRefundAddress(taxRefund, thCountryImmigration, deCountryImmigration);
     await createAdmin(taxRefund, thAdmin, deAdmin);
     await createShop(taxRefund, shop, "7-Eleven", "DE");
@@ -66,5 +70,5 @@ export const init = async () => {
         value: ethers.utils.parseEther('1000')
     });
     await tx.wait();
-    return { deployer, thAdmin, deAdmin, shop, buyer, taxRefund, thCountryImmigration, deCountryImmigration };
+    return { deployer, thAdmin, deAdmin, shop, buyer, taxRefund, thCountryImmigration, deCountryImmigration, multicall };
 };

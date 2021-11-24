@@ -11,11 +11,12 @@ import { init } from "./utils";
 const provider = waffle.provider;
 
 async function main() {
-  const {deployer,thAdmin,deAdmin,shop,buyer,taxRefund,thCountryImmigration,deCountryImmigration} = await init();
+  const { deployer, thAdmin, deAdmin, shop, buyer, taxRefund, thCountryImmigration, deCountryImmigration, multicall } = await init();
 
-  console.log("tagRefund address :", taxRefund.address)
+  console.log("tagRefund address :", taxRefund.address);
   console.log("thCountryImmigration address :", thCountryImmigration.address);
   console.log("deCountryImmigration address :", deCountryImmigration.address);
+  console.log("multicall address:", multicall.address);
 
 }
 
