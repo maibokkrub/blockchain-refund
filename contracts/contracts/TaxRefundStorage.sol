@@ -189,10 +189,6 @@ contract TaxRefundStorage is Ownable {
         returns (bool)
     {
         require(orders[id].state == State.APPROVED, "Invalid Order's State");
-        require(
-            !compareString(admins[msg.sender].country, orders[id].shop.country),
-            "Same country as the order created"
-        );
         orders[id].state = State.CONFIRMED;
         return true;
     }
