@@ -20,6 +20,8 @@ export function useAdmin(address: string | Falsy): boolean | undefined {
     ) ?? [];
   if (isAdmin !== undefined) {
     data.setIsAdmin(isAdmin);
+  } else {
+    data.setIsAdmin(false);
   }
   return isAdmin;
 }
@@ -37,6 +39,8 @@ export function useShop(address: string | Falsy): boolean | undefined {
     ) ?? [];
     if (isShop !== undefined) {
       data.setIsShop(isShop);
+    } else {
+      data.setIsShop(false);
     }
   return isShop;
 }
