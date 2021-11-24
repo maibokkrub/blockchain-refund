@@ -41,7 +41,7 @@ contract TaxRefundStorage is Ownable {
     mapping(bytes16 => Order) public orders;
     mapping(address => Shop) public shops;
     mapping(string => address) public refundAddress;
-    // mapping (address => byte16[]) private _ordersByShop;
+    mapping(address => bytes16[]) private _ordersByShop;
     mapping(address => bytes16[]) private _ordersByBuyer;
     mapping(address => Admin) public admins;
 
@@ -128,7 +128,7 @@ contract TaxRefundStorage is Ownable {
         _order.state = State.PENDING;
         _order.shop = shops[msg.sender];
 
-        // _ordersByShop[msg.sender].push(_order);
+        _ordersByShop[msg.sender].push(_order.id);
         _ordersByBuyer[buyer].push(_order.id);
         orders[_order.id] = _order;
     }
@@ -199,6 +199,15 @@ contract TaxRefundStorage is Ownable {
         returns (Order[] memory)
     {
         bytes16[] memory _orderIds = _ordersByBuyer[buyer];
+        Order[] memory _order = new Order[](_orderIds.length);
+        for (uint256 i = 0; i < _orderIds.length; i++) {
+            _order[i] = orders[_orderIds[i]];
+        }
+        return _order;
+    }
+
+    function getAllOrdersByShop(address shop) public view returns (Order[] memory){
+        bytes16[] memory _orderIds = _ordersByShop[shop];
         Order[] memory _order = new Order[](_orderIds.length);
         for (uint256 i = 0; i < _orderIds.length; i++) {
             _order[i] = orders[_orderIds[i]];
