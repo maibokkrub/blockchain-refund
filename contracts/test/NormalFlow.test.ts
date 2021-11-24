@@ -65,19 +65,17 @@ describe("Normal Flow", function () {
         });
 
 
-        it("[APPROVED => APPROVED] German Admin Should not able to CONFIRM order", async function () {
+        it("[APPROVED => APPROVED] German Admin Should able to CONFIRM order", async function () {
             let orders = await taxRefund.getAllOrdersByBuyer(await buyer.getAddress());
-            await expect(taxRefund.connect(deAdmin).confirmOrder(await buyer.getAddress(), orders[0].id)).to.be.revertedWith("Same country as the order created");
-            await expect(taxRefund.connect(deAdmin).confirmOrder(await buyer.getAddress(), orders[1].id)).to.be.revertedWith("Same country as the order created");
+            tx = await taxRefund.connect(deAdmin).confirmOrder(await buyer.getAddress(), orders[0].id);
+            await tx.wait();
             orders = await taxRefund.getAllOrdersByBuyer(await buyer.getAddress());
-            expect(orders[0].state).to.equal(3);
+            expect(orders[0].state).to.equal(4);
             expect(orders[1].state).to.equal(3);
         });
 
         it("[APPROVED => CONFIRMED] Thailand Admin Should able to CONFIRM order", async function () {
             let orders = await taxRefund.getAllOrdersByBuyer(await buyer.getAddress());
-            tx = await taxRefund.connect(thAdmin).confirmOrder(await buyer.getAddress(), orders[0].id);
-            await tx.wait();
             tx = await taxRefund.connect(thAdmin).confirmOrder(await buyer.getAddress(), orders[1].id);
             await tx.wait();
             orders = await taxRefund.getAllOrdersByBuyer(await buyer.getAddress());
