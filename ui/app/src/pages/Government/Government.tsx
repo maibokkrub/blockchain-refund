@@ -1,87 +1,170 @@
-import React, { useEffect, useState } from 'react';
-import { Container, Flex, Spacer, Box, Stack, Input, Button, Center, Text } from "@chakra-ui/react";
-import Table from '../../components/Table/Table';
-import { useContractCall, useContractFunction, useEthers } from '@usedapp/core';
-import { MainContract } from '../../contract';
-
+import React, { useEffect, useState } from "react";
+import {
+    Container,
+    Flex,
+    Spacer,
+    Box,
+    Stack,
+    Input,
+    Button,
+    Center,
+    Text,
+} from "@chakra-ui/react";
+import Table from "../../components/Table/Table";
+import { useContractCall, useContractFunction, useEthers } from "@usedapp/core";
+import MainContractABI from "../../abi/main_contract.abi.json";
+import { MainContract } from "../../utils/contract";
+import { MAIN_CONTRACT_ADDRESS } from "../../config";
+import { Interface } from "@ethersproject/abi";
+import { useAdmin, useShop } from "../../utils/hooks";
 const testOrderData = [
-  { user_address: "0x3cds...78a592b4c", shop_name: "Ari Shop", total: 24.23, vat: 1.70, status: 'COMPLETED' },
-  { user_address: "0x3cds...78a592b4c", shop_name: "Garrett", total: 49.10, vat: 3.44, status: 'REFUNDED' },
-  { user_address: "0x3cds...78a592b4c", shop_name: "KFC", total: 18.43, vat: 1.29, status: 'REFUNDED' },
+    {
+        user_address: "0x3cds...78a592b4c",
+        shop_name: "Ari Shop",
+        total: 24.23,
+        vat: 1.7,
+        status: "COMPLETED",
+    },
+    {
+        user_address: "0x3cds...78a592b4c",
+        shop_name: "Garrett",
+        total: 49.1,
+        vat: 3.44,
+        status: "REFUNDED",
+    },
+    {
+        user_address: "0x3cds...78a592b4c",
+        shop_name: "KFC",
+        total: 18.43,
+        vat: 1.29,
+        status: "REFUNDED",
+    },
 ];
 
 const testOrderColumns = [
-  { title: "User Address", field: "user_address", },
-  { title: "Shop", field: "shop_name", },
-  { title: "Total", field: "total", type: 'numeric', },
-  { title: "VAT", field: "vat", type: 'numeric', },
-  { title: "Status", field: "status", type: 'numeric', },
+    { title: "User Address", field: "user_address" },
+    { title: "Shop", field: "shop_name" },
+    { title: "Total", field: "total", type: "numeric" },
+    { title: "VAT", field: "vat", type: "numeric" },
+    { title: "Status", field: "status", type: "numeric" },
 ];
 
 function GovernmentPage() {
-  const { account } = useEthers()
+    const { account } = useEthers();
+    const isAdmin = useAdmin(account);
+    const [buyerAddress, setBuyerAddress] = useState("");
+    const [billNo, setBillNo] = useState("");
+    const [productId, setProductId] = useState("");
+    const [price, setPrice] = useState("");
+    const [pendingAmount, setPendingAmount] = useState(0.25);
+    const [refundedAmount, setRefundedAmount] = useState(0.25);
+    // useEffect(() => {
+    //     if (active) {
+    //         console.log(isAdmin);
+    //     }
+    // }, [account]);
+    console.log(isAdmin);
 
-  const [buyerAddress, setBuyerAddress] = useState('');
-  const [billNo, setBillNo] = useState('');
-  const [productId, setProductId] = useState('');
-  const [price, setPrice] = useState('');
-  const [pendingAmount, setPendingAmount] = useState(0.25);
-  const [refundedAmount, setRefundedAmount] = useState(0.25);
-  
-  useEffect(() => {  
-    if( account !== null ) {
-      const isAdmin = async() =>(await MainContract.isAdmin(account as string));
-      // const [_isAdmin] = useContractFunction(MainContract, 'isAdmin'); 
-      console.log(isAdmin());
-    }
-  }, [account] );
-
-  return (
-    <Container maxW="1300px" h='calc(100vh - 64px - 3rem)'>
+    return (
+        <Container maxW="1300px" h="calc(100vh - 64px - 3rem)">
             <Flex>
                 <Spacer />
-                <Box w="480px" p="4" bg="white" paddingBottom="45px" borderRadius="10px">
-                  <Center>
-                    <Text fontSize="28px" as="b" paddingTop="27px" paddingBottom="18px" color="#1a202c">Confirm Order</Text>
-                  </Center>
-                  <Stack spacing={3}>
-                    <Input placeholder="Buyer Address" _placeholder={{ color: "#1a202c" }} size="md" variant="filled" bg="#90cdf4" color="#1a202c" value={buyerAddress} />
-                    <Input placeholder="Bill Number" _placeholder={{ color: "#1a202c" }} size="md" variant="filled" bg="#90cdf4" color="#1a202c" value={billNo} />
-                    <Input placeholder="Product Reference ID" _placeholder={{ color: "#1a202c" }} size="md" variant="filled" bg="#90cdf4" color="#1a202c" value={productId} />
-                    <Input placeholder="Price" _placeholder={{ color: "#1a202c" }} size="md" variant="filled" bg="#90cdf4" color="#1a202c" value={price} />
-                  </Stack>
-                  <br />
-                  <Center>
-                    <Button bg="#1a202c">Confirm Order</Button>
-                  </Center>
+                <Box
+                    w="480px"
+                    p="4"
+                    bg="white"
+                    paddingBottom="45px"
+                    borderRadius="10px"
+                >
+                    <Center>
+                        <Text
+                            fontSize="28px"
+                            as="b"
+                            paddingTop="27px"
+                            paddingBottom="18px"
+                            color="#1a202c"
+                        >
+                            Confirm Order
+                        </Text>
+                    </Center>
+                    <Stack spacing={3}>
+                        <Input
+                            placeholder="Buyer Address"
+                            _placeholder={{ color: "#1a202c" }}
+                            size="md"
+                            variant="filled"
+                            bg="#90cdf4"
+                            color="#1a202c"
+                            value={buyerAddress}
+                        />
+                        <Input
+                            placeholder="Bill Number"
+                            _placeholder={{ color: "#1a202c" }}
+                            size="md"
+                            variant="filled"
+                            bg="#90cdf4"
+                            color="#1a202c"
+                            value={billNo}
+                        />
+                        <Input
+                            placeholder="Product Reference ID"
+                            _placeholder={{ color: "#1a202c" }}
+                            size="md"
+                            variant="filled"
+                            bg="#90cdf4"
+                            color="#1a202c"
+                            value={productId}
+                        />
+                        <Input
+                            placeholder="Price"
+                            _placeholder={{ color: "#1a202c" }}
+                            size="md"
+                            variant="filled"
+                            bg="#90cdf4"
+                            color="#1a202c"
+                            value={price}
+                        />
+                    </Stack>
+                    <br />
+                    <Center>
+                        <Button bg="#1a202c">Confirm Order</Button>
+                    </Center>
                 </Box>
                 <Spacer />
                 <Box w="660px" p="4">
-                  <Table
-                    title="Order"
-                    data={testOrderData}
-                    columns={testOrderColumns}
-                  />
-                  <br />
-                  <Center>
-                    <Spacer />
-                    <Spacer />
-                    <Box bg="salmon" p="4" borderRadius="10px" >
-                      <Text fontSize="16px" align="center">Pending to Refund Amount</Text>
-                      <Text fontSize="28px" as="b" align="center">{pendingAmount} ETH</Text>
-                    </Box>
-                    <Spacer />
-                    <Box bg="#4EC33D" p="4" borderRadius="10px" >
-                      <Text fontSize="16px" align="center">Refunded Amount</Text>
-                      <Text fontSize="28px" as="b" align="center">{refundedAmount} ETH</Text>
-                    </Box>
-                    <Spacer />
-                    <Spacer />
-                  </Center>
+                    <Table
+                        title="Order"
+                        data={testOrderData}
+                        columns={testOrderColumns}
+                    />
+                    <br />
+                    <Center>
+                        <Spacer />
+                        <Spacer />
+                        <Box bg="salmon" p="4" borderRadius="10px">
+                            <Text fontSize="16px" align="center">
+                                Pending to Refund Amount
+                            </Text>
+                            <Text fontSize="28px" as="b" align="center">
+                                {pendingAmount} ETH
+                            </Text>
+                        </Box>
+                        <Spacer />
+                        <Box bg="#4EC33D" p="4" borderRadius="10px">
+                            <Text fontSize="16px" align="center">
+                                Refunded Amount
+                            </Text>
+                            <Text fontSize="28px" as="b" align="center">
+                                {refundedAmount} ETH
+                            </Text>
+                        </Box>
+                        <Spacer />
+                        <Spacer />
+                    </Center>
                 </Box>
             </Flex>
         </Container>
-  );
+    );
 }
 
 export default GovernmentPage;
