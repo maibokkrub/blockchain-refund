@@ -3,13 +3,17 @@ import {
     Container,
     HStack,
 } from "@chakra-ui/react";
-
 import CreateOrder from "./CreateOrder";
 import CancelOrder from "./CancelOrder";
 import SearchShop from "./SearchShop";
+import { useAdmin, useShop } from "../../utils/hooks";
+import { useEthers } from '@usedapp/core';
 import { DataContext } from "../../components/DataContext/DataContext";
 
 function ShopPage() {
+    const { account }  = useEthers(); 
+    useAdmin(account);
+    useShop(account);
     const data = useContext(DataContext);
     
     return (

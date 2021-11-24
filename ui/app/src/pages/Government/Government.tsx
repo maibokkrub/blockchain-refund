@@ -1,15 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import {
     Container,
-    Flex,
-    Spacer,
-    Box,
-    Stack,
-    Input,
-    Button,
-    Center,
-    Text,
-    VStack,
     HStack,
 } from "@chakra-ui/react";
 import { useContractCall, useContractFunction, useEthers } from "@usedapp/core";
@@ -23,8 +14,9 @@ import { _govTransformer } from "../../utils/getter";
 import { DataContext } from "../../components/DataContext/DataContext";
 
 function GovernmentPage() {
-    const { account } = useEthers();
-    const isAdmin = useAdmin(account);
+    const { account }  = useEthers(); 
+    useAdmin(account);
+    useShop(account);
     const data = useContext(DataContext);
 
     return (

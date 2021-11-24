@@ -10,8 +10,6 @@ import { Link } from "react-router-dom";
 function NavBar(){ 
     const { account } = useEthers();
     const data = useContext(DataContext);
-    useAdmin(account);
-    useShop(account);
     
     return ( 
         <Flex h='64px' p={{base:'2', lg:'5'}} my='1rem' align='center' alignContent='space-between'> 

@@ -5,6 +5,7 @@ import { useContractMethod, useOrder, useRefundAmount } from '../../utils/hooks'
 import { useEthers } from '@usedapp/core';
 import { Order, OrderView, _orderTransformer } from '../../utils/getter';
 import {utils} from "ethers";
+import { useAdmin, useShop } from "../../utils/hooks";
 import { DataContext } from "../../components/DataContext/DataContext";
 
 function TouristPage() {
@@ -13,6 +14,8 @@ function TouristPage() {
   const { state: claimRefundState, send: claimRefund }   = useContractMethod("refund");
 
   const { account }  = useEthers(); 
+  useAdmin(account);
+  useShop(account);
 
   const orders = useOrder();
 
@@ -42,7 +45,7 @@ function TouristPage() {
   
   const allOrders = orders?.map((x:Order) => _orderTransformer(x));
   const _ordersSum = allOrders?.map((x:OrderView)=>x.itemTotal).reduce((x:number,sum:number)=>x+sum, 0);
-  
+
   return (
     <Container maxW="1300px" h='calc(100vh - 64px - 3rem)'>
       { !data.isShop && !data.isAdmin ? 
