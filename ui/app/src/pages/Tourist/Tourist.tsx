@@ -44,7 +44,8 @@ function TouristPage() {
   ];
   
   const allOrders = orders?.map((x:Order) => _orderTransformer(x));
-  const _ordersSum = allOrders?.map((x:OrderView)=>x.itemTotal).reduce((x:number,sum:number)=>x+sum, 0);
+  const _ordersSum = allOrders?.filter((x:OrderView)=>x.status!=='REFUNDED').map((x:OrderView)=>x.itemTotal).reduce((x:number,sum:number)=>x+sum, 0);
+  // const _ordersSum = 0;
 
   return (
     <Container maxW="1300px" h='calc(100vh - 64px - 3rem)'>
