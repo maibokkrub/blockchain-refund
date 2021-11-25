@@ -1,16 +1,7 @@
-## Demo Link 
+## Demo Link
 
 https://maibokkrub.github.io/blockchain-refund/
-Current version is not deployed to Rinkedby Testnet. It will require running local node.
-
-To run a local node,
-```
-cd contracts 
-yarn 
-yarn hardhat node
-yarn deploy scripts/deploy.ts --network localhost
-```
-Don't for get to change the wallet RPC to local.
+Current version is not deployed to any Ethereum Testnet. It will require running local node.
 
 ## About
 
@@ -18,31 +9,79 @@ This project is created to implement VAT refund process on Blockchain. All stake
 
 ## Known Issues
 
-- Pages sometimes crash/load slowly when fecth data (need contract call optimization)
+-   Pages sometimes crash/load slowly when fecth data (need contract call optimization)
+-   If MetaMask throw nonce error, You need to reset account in MetaMask. Reference [How to reset account in MetaMask](https://medium.com/singapore-blockchain-dapps/reset-metamask-nonce-766dd4c27ca8)
+
+## Contract
+
+Directory `./contracts`
+
+Installing dependencies
+
+```shell
+cd contracts
+yarn
+```
+
+Running the test script
+
+```shell
+yarn test
+```
+
+To run a local node,
+
+```shell
+yarn node
+```
+
+Open another terminal to deploy contracts and the demo situation
+
+```shell
+yarn deploy scripts/deploy.ts --network localhost
+```
+
+Don't forget to change the wallet Network to localhost.
+
+## Accounts
+
+Add `test test test test test test test test test test test junk` as a seed phase to MetaMask.
+
+-   Account 2 is Thailand Immigration address
+-   Account 3 is Germany Immigration address
+-   Account 4 is Germany Shop address
+-   Account 5 is Tourist address
+-   Account 6 is Thailand Shop address
 
 ## Frontend
 
 Directory `./ui/app`
 
 Installing dependencies
-```
-cd ui/app 
+
+```shell
+cd ui/app
 yarn
 ```
 
-Building & Deployment 
+Starting localhost server
+
+```shell
+yarn start
 ```
-yarn build 
+
+Building & Deployment
+
+```shell
+yarn build
 yarn deploy
 ```
 
-## Contract
+## State Diagram
 
-Directory `./contracts`
+![alt text](state_diagram.png "State Diagram")
 
 ## Caution
 
 The UI is served by Github Pages from branch `gh-pages`.
 Please do not push any code to that branch.
-
-
