@@ -4,7 +4,6 @@
   "description": "Root folder to store contracts.",
   "main": "index.js",
   "scripts": {
-    "node": "yarn hardhat node",
     "compile": "yarn hardhat compile",
     "clean": "yarn hardhat clean",
     "test": "yarn hardhat test",

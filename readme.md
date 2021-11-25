@@ -32,7 +32,7 @@ yarn test
 To run a local node,
 
 ```shell
-yarn node
+yarn hardhat node
 ```
 
 Open another terminal to deploy contracts and the demo situation
