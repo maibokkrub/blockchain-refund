@@ -2,6 +2,10 @@
 
 This project is created to implement VAT refund process on Blockchain. All stakeholders including Tourist, Shop and Government can participate in the process to reduce time and waste in existing refund process.
 
+## Known Issues
+
+- Pages sometimes crash/load slowly when fecth data (need contract call optimization)
+
 ## Frontend
 
 Directory `./ui/app`
