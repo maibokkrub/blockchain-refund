@@ -12,26 +12,36 @@ import { utils } from 'ethers';
 // ​​​    shopName: "kuay"
 // state: 0
 
+export const STATES = [
+    'PENDING', 
+    'CANCELLED' ,
+    'APPROVED'  , 
+    'CONFIRMED' ,
+    'REJECTED'  ,
+    'REFUNDED'  ,
+]
+
 // OUTPUT country, itemName, amount, price, total, status
 export const _orderTransformer = (order:Order):OrderView => { 
     return { 
         country:  order.shop.country,
         itemName: order.name,
         shopName: order.shop.shopName,
-        status:   order.state,
+        status:   STATES[order.state],
         itemAmount: order.amount.toNumber(),
         itemPrice:  parseFloat(utils.formatEther(order.price)),
         itemTotal:  parseFloat(utils.formatEther(order.amount.mul(order.price))),
     }
 }
-export const _govTransformer = (order:Order) => { 
+export const _govTransformer = (order:any) => { 
     return { 
         id: order.id,
         country:  order.shop.country,
+        buyer: order.buyer,
         itemName: order.name,
         shopName: order.shop.shopName,
         buyerName: order.buyerName,
-        status:   order.state,
+        status:   STATES[order.state],
         itemAmount: order.amount.toNumber(),
         itemPrice:  parseFloat(utils.formatEther(order.price)),
         itemTotal:  parseFloat(utils.formatEther(order.amount.mul(order.price))),
@@ -51,7 +61,7 @@ export interface OrderView{
     country: string; 
     itemName: string; 
     shopName: string;
-    status: OrderState; 
+    status: string; 
     // To be changed to big number
     itemAmount: number; 
     itemPrice: number;
