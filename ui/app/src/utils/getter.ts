@@ -13,12 +13,12 @@ import { utils } from 'ethers';
 // state: 0
 
 // OUTPUT country, itemName, amount, price, total, status
-export const _orderTransformer = (order:Order):OrderView => { 
+export const _orderTransformer = (order:Order):OrderView => {
     return { 
         country:  order.shop.country,
         itemName: order.name,
         shopName: order.shop.shopName,
-        status:   order.state,
+        status:   OrderState[order.state],
         itemAmount: order.amount.toNumber(),
         itemPrice:  parseFloat(utils.formatEther(order.price)),
         itemTotal:  parseFloat(utils.formatEther(order.amount.mul(order.price))),
@@ -31,27 +31,28 @@ export const _govTransformer = (order:Order) => {
         itemName: order.name,
         shopName: order.shop.shopName,
         buyerName: order.buyerName,
-        status:   order.state,
+        status:   OrderState[order.state],
         itemAmount: order.amount.toNumber(),
         itemPrice:  parseFloat(utils.formatEther(order.price)),
         itemTotal:  parseFloat(utils.formatEther(order.amount.mul(order.price))),
     }
 }
 
-export enum OrderState { 
-    PENDING   =0,
-    CANCELLED =1,
-    APPROVED  =2, 
-    CONFIRMED =3,
-    REJECTED  =4,
-    REFUNDED  =5,
-}
+export const OrderState = [
+    "PENDING",
+    "CANCELLED",
+    "REJECTED",
+    "APPROVED",
+    "CONFIRMED",
+    "REFUNDED"
+]
+
 
 export interface OrderView{ 
     country: string; 
     itemName: string; 
     shopName: string;
-    status: OrderState; 
+    status: any; 
     // To be changed to big number
     itemAmount: number; 
     itemPrice: number;
