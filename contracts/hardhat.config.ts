@@ -37,7 +37,6 @@ const config: HardhatUserConfig = {
         process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
     hardhat: {
-      mining: { auto: true, interval: 5000 },
       chainId: 1337
     },
   },
