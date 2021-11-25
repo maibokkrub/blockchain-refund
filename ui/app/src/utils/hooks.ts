@@ -3,7 +3,6 @@ import { useContractCall, useContractFunction, useEthers } from "@usedapp/core";
 import { Falsy } from "@usedapp/core/dist/esm/src/model/types";
 import { MainContractInterface, MainContract } from "./contract";
 import { MAIN_CONTRACT_ADDRESS } from '../config';
-import { _orderTransformer, Order, OrderState } from './getter';
 import { useContext } from 'react';
 import { DataContext } from '../components/DataContext/DataContext';
 
@@ -37,16 +36,16 @@ export function useShop(address: string | Falsy): boolean | undefined {
         args: [address],
       }
     ) ?? [];
-    if (isShop !== undefined) {
-      data.setIsShop(isShop);
-    } else {
-      data.setIsShop(false);
-    }
+  if (isShop !== undefined) {
+    data.setIsShop(isShop);
+  } else {
+    data.setIsShop(false);
+  }
   return isShop;
 }
 
 export function useOrder(address?: string | Falsy) {
-  const {account} = useEthers(); 
+  const { account } = useEthers();
   address = address || account;
   const orderList = useContractCall(
     address && {
@@ -60,7 +59,7 @@ export function useOrder(address?: string | Falsy) {
 }
 
 export function useOrderByShop(address?: string | Falsy) {
-  const {account} = useEthers(); 
+  const { account } = useEthers();
   address = address || account;
   const orderList = useContractCall(
     address && {
@@ -73,16 +72,16 @@ export function useOrderByShop(address?: string | Falsy) {
   return orderList[0];
 }
 
-export function useRefundAmount(address: string| Falsy,country:string[] | Falsy): BigNumber | undefined{
+export function useRefundAmount(address: string | Falsy, country: string[] | Falsy): BigNumber | undefined {
   const [refundAmount] = useContractCall(
     address && {
       abi: MainContractInterface,
       address: MAIN_CONTRACT_ADDRESS,
       method: 'getRefundAmount',
       args: [address, country],
-    } 
-  ) ?? [] 
-  return refundAmount
+    }
+  ) ?? [];
+  return refundAmount;
 }
 
 export function useContractMethod(methodName: string) {

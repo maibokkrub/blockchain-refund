@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
     Input,
     Button,
     Text,
     VStack,
-    HStack,
 } from "@chakra-ui/react";
 import { useContractMethod } from "../../utils/hooks";
 

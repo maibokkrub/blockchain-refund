@@ -1,26 +1,18 @@
-import React, { useState } from 'react'; 
-import {
-    Flex,
-    Box,
-    Stack,
-    Input,
-    Button,
-    Center,
-    Text,
-    VStack,
-} from "@chakra-ui/react";
+import { useState } from "react";
+import { Stack, Input, Button, Center, Text, VStack } from "@chakra-ui/react";
 import { useContractMethod } from "../../utils/hooks";
 
-function CreateShop(){ 
-    const { state: createShopState, send: createShop }   = useContractMethod("createShop");
+function CreateShop() {
+    const { state: createShopState, send: createShop } =
+        useContractMethod("createShop");
 
-    const [country, setCountry]         = useState("");
-    const [shopName, setShopName]       = useState("");
+    const [country, setCountry] = useState("");
+    const [shopName, setShopName] = useState("");
     const [shopAddress, setShopAddress] = useState("");
 
-    const handleCreateShop = () => createShop(shopAddress, shopName, country)
+    const handleCreateShop = () => createShop(shopAddress, shopName, country);
 
-    return ( 
+    return (
         <VStack
             w="full"
             m="4"
@@ -76,15 +68,11 @@ function CreateShop(){
                 <Button onClick={handleCreateShop} bg="#1a202c">
                     Create Shop
                 </Button>
-                <Text color='black'> 
-                    { createShopState.status }
-                </Text>
-                <Text color='red'> 
-                    { createShopState.errorMessage } 
-                </Text>
+                <Text color="black">{createShopState.status}</Text>
+                <Text color="red">{createShopState.errorMessage}</Text>
             </VStack>
         </VStack>
-    )
+    );
 }
 
 export default CreateShop;
